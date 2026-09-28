@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Портал Управление — «Гарні речі»</title>
+  <title>Портал Управління — «Гарні речі»</title>
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -65,7 +65,7 @@
   <section id="authScreen" class="flex-1 flex flex-col items-center justify-center p-4">
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 max-w-md w-full p-6 sm:p-8">
       
-      <!-- Шапка панели авторизации (Тема + Язык) -->
+      <!-- Переключатель в шапке авторизации -->
       <div class="flex justify-between items-center mb-4">
         <button onclick="toggleLanguage()" class="px-2.5 py-1.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded-lg border border-slate-200 dark:border-slate-700 text-xs font-bold transition flex items-center space-x-1.5">
           <i class="fa-solid fa-globe text-indigo-600 dark:text-indigo-400"></i>
@@ -85,7 +85,7 @@
         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1" data-i18n="authSubtitle">Управління заявками та персоналом складу</p>
       </div>
 
-      <!-- Переключатель Вход/Регистрация -->
+      <!-- Переключатель Вход / Регистрация -->
       <div class="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex mb-6 text-sm font-medium">
         <button id="btnAuthLogin" onclick="setAuthMode('login')" class="flex-1 py-2 rounded-lg text-center transition-all bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-sm font-semibold" data-i18n="tabLogin">Вхід</button>
         <button id="btnAuthRegister" onclick="setAuthMode('register')" class="flex-1 py-2 rounded-lg text-center transition-all text-slate-400 hover:text-white" data-i18n="tabRegister">Реєстрація</button>
@@ -93,7 +93,7 @@
 
       <div id="authErrorMsg" class="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-600 font-medium mb-4 hidden"></div>
 
-      <!-- Единая форма для Входа и Регистрации -->
+      <!-- Форма -->
       <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1" data-i18n="roleLabel">Роль</label>
@@ -120,7 +120,7 @@
           <input type="password" id="authAccessCode" placeholder="•••" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
         </div>
 
-        <!-- Поля Имя/Фамилия (Только для регистрации) -->
+        <!-- Имя и Фамилия (Только при регистрации) -->
         <div id="nameFieldsContainer" class="grid grid-cols-2 gap-3 hidden">
           <div>
             <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1" data-i18n="lastNameLabel">Прізвище *</label>
@@ -142,7 +142,7 @@
           <input type="password" id="authPassword" required value="123456" placeholder="••••••••" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
         </div>
 
-        <!-- Предупреждение для аутсорса -->
+        <!-- Уведомление Аутсорсу -->
         <div id="outsourceNotice" class="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg text-xs text-amber-800 dark:text-amber-200 leading-relaxed hidden" data-i18n="outsourceNoticeText">
           Для реєстрації Аутсорс-співробітника менеджер повинен заздалегідь внести ваші ПІБ та телефон у білий список доступу.
         </div>
@@ -192,12 +192,9 @@
       <form id="requestForm" onsubmit="submitClientRequest(event)" class="space-y-4 text-sm">
         <div>
           <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1" data-i18n="locationLabel">Локація</label>
-          <select id="reqLocation" class="w-full px-3 py-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700">
-            <option value="Мурманська склад тканин">Мурманська</option>
-            <option value="Ельворті склад фурнітури">Ельворті</option>
-            <option value="Ангар центральний">Ангар</option>
-            <option value="Oil склад">Oil</option>
-            <option value="ЕРЦ склад">ЕРЦ</option>
+          <!-- Автоматически блокируется и настраивается строго под склад вошедшего Админа -->
+          <select id="reqLocation" class="w-full px-3 py-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700 bg-slate-100 font-semibold cursor-not-allowed">
+            <!-- Заполняется динамически из JS -->
           </select>
         </div>
 
@@ -256,7 +253,7 @@
   <!-- ================= MANAGER SCREEN (Менеджер) ================= -->
   <main id="managerScreen" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 hidden">
     <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6">
-      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2" data-i18n="managerCabinetTitle">Кабінет Менеджера</h2>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-white" data-i18n="managerCabinetTitle">Кабінет Менеджера</h2>
       <p class="text-sm text-slate-500 dark:text-slate-400" data-i18n="managerCabinetSubtitle">Обробка заявок, підбір персоналу та контроль білого списку аутсорса.</p>
     </div>
 
@@ -287,20 +284,22 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Открытые смены, на которые исполнитель ЕЩЕ НЕ откликался -->
       <div class="space-y-4">
         <h3 class="font-bold text-slate-900 dark:text-white" data-i18n="openShiftsTitle">Відкриті зміни (Доступна робота)</h3>
         <div id="outsourceOpenShiftsList" class="space-y-3"></div>
       </div>
 
+      <!-- Смены, на которые исполнитель УЖЕ откликнулся (Мои заявки/выходы) -->
       <div class="space-y-4">
-        <h3 class="font-bold text-slate-900 dark:text-white" data-i18n="scheduledShiftsTitle">Мої заплановані виходи</h3>
+        <h3 class="font-bold text-slate-900 dark:text-white" data-i18n="scheduledShiftsTitle">Мої заплановані виходи / Відгуки</h3>
         <div id="outsourceScheduledList" class="space-y-3"></div>
       </div>
     </div>
   </main>
 
 
-  <!-- JavaScript: Переводы + Логика -->
+  <!-- JavaScript: Логика -->
   <script>
     const translations = {
       ru: {
@@ -350,7 +349,7 @@
         outsourceCabinetTitle: "Кабинет Исполнителя (Аутсорс)",
         outsourceCabinetSubtitle: "Просмотр доступных открытых смен и ваши запланированные выходы.",
         openShiftsTitle: "Открытые смены (Доступная работа)",
-        scheduledShiftsTitle: "Мои запланированные выходы"
+        scheduledShiftsTitle: "Мои запланированные выходы / Отклики"
       },
       ua: {
         logout: "Вийти",
@@ -399,7 +398,7 @@
         outsourceCabinetTitle: "Кабінет Виконавця (Аутсорс)",
         outsourceCabinetSubtitle: "Перегляд доступних відкритих змін та ваші заплановані виходи.",
         openShiftsTitle: "Відкриті зміни (Доступна робота)",
-        scheduledShiftsTitle: "Мої заплановані виходи"
+        scheduledShiftsTitle: "Мої заплановані виходи / Відгуки"
       },
       en: {
         logout: "Log out",
@@ -448,14 +447,19 @@
         outsourceCabinetTitle: "Outsource Worker Dashboard",
         outsourceCabinetSubtitle: "View open shifts and your planned schedule.",
         openShiftsTitle: "Open Shifts (Work Available)",
-        scheduledShiftsTitle: "My Planned Shifts"
+        scheduledShiftsTitle: "My Planned Shifts / Applications"
       }
     };
 
-    let currentLang = localStorage.getItem('appLang') || 'ua';
-    let currentAuthMode = 'login'; // 'login' или 'register'
+    const WAREHOUSE_NAMES = {
+      oil: "Oil склад",
+      erc: "ЕРЦ склад",
+      murmansk: "Мурманська склад тканин"
+    };
 
-    // Коды доступа для складов и менеджера
+    let currentLang = localStorage.getItem('appLang') || 'ua';
+    let currentAuthMode = 'login';
+
     const VALID_CODES = {
       manager: "111",
       admin: {
@@ -465,7 +469,6 @@
       }
     };
 
-    // Хранилище данных
     let outsourceAccessList = JSON.parse(localStorage.getItem('outsourceList')) || [
       { name: "Кирилл Лупан", phone: "0000000003" },
       { name: "Иванна Грибанова", phone: "0000000004" }
@@ -482,10 +485,27 @@
         gender: "Без обмежень",
         count: 3,
         comment: "Термінове відвантаження рулонів.",
-        status: 'new',
+        status: 'published',
         managerQuestion: "",
         clientAnswer: "",
-        assignedWorkers: []
+        applicants: [],
+        confirmedWorkers: []
+      },
+      {
+        id: 102,
+        clientName: "Адмін (Oil)",
+        location: "Oil склад",
+        position: "Комплектувальник",
+        date: "2026-09-29",
+        time: "08:00 - 17:00",
+        gender: "Без обмежень",
+        count: 2,
+        comment: "",
+        status: 'published',
+        managerQuestion: "",
+        clientAnswer: "",
+        applicants: ["Кирилл Лупан"],
+        confirmedWorkers: ["Кирилл Лупан"]
       }
     ];
 
@@ -496,9 +516,7 @@
       localStorage.setItem('outsourceList', JSON.stringify(outsourceAccessList));
     }
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('dark');
-    }
+    function toggleTheme() { document.documentElement.classList.toggle('dark'); }
 
     function toggleLanguage() {
       currentLang = currentLang === 'ua' ? (currentLang === 'ru' ? 'en' : 'ru') : 'ua';
@@ -523,9 +541,7 @@
       currentAuthMode = mode;
       document.getElementById('btnAuthLogin').className = mode === 'login' ? 'flex-1 py-2 rounded-lg text-center transition-all bg-white dark:bg-slate-700 text-indigo-600 shadow-sm font-semibold' : 'flex-1 py-2 rounded-lg text-center transition-all text-slate-400';
       document.getElementById('btnAuthRegister').className = mode === 'register' ? 'flex-1 py-2 rounded-lg text-center transition-all bg-white dark:bg-slate-700 text-indigo-600 shadow-sm font-semibold' : 'flex-1 py-2 rounded-lg text-center transition-all text-slate-400';
-      
       document.getElementById('authSubmitBtn').textContent = mode === 'login' ? (translations[currentLang].btnLoginSubmit || 'Увійти') : (translations[currentLang].btnRegisterSubmit || 'Зареєструватися');
-      
       toggleFormFields();
       document.getElementById('authErrorMsg').classList.add('hidden');
     }
@@ -534,13 +550,9 @@
       const role = document.getElementById('authRole').value;
       const isReg = currentAuthMode === 'register';
 
-      // Поля ФИО только при регистрации
       document.getElementById('nameFieldsContainer').classList.toggle('hidden', !isReg);
-
-      // Склад виден для Админа при входе и регистрации
       document.getElementById('warehouseContainer').classList.toggle('hidden', role !== 'admin');
 
-      // Код доступа виден для Менеджера и Админа при регистрации, и для Админа при входе
       if (role === 'admin') {
         document.getElementById('accessCodeContainer').classList.remove('hidden');
       } else if (role === 'manager' && isReg) {
@@ -549,7 +561,6 @@
         document.getElementById('accessCodeContainer').classList.add('hidden');
       }
 
-      // Желтое сообщение видна только для аутсорса при регистрации
       document.getElementById('outsourceNotice').classList.toggle('hidden', !(role === 'outsource' && isReg));
     }
 
@@ -565,7 +576,6 @@
       errBox.classList.add('hidden');
 
       if (currentAuthMode === 'register') {
-        // Проверка ВАЛИДАЦИИ при регистрации
         if (role === 'admin') {
           if (VALID_CODES.admin[warehouse] !== code) {
             errBox.textContent = `Помилка: Невірний код доступу для складу ${warehouse.toUpperCase()}! (Потрібен код ${VALID_CODES.admin[warehouse]})`;
@@ -588,7 +598,6 @@
           }
         }
       } else {
-        // ВХОД В СИСТЕМУ
         if (role === 'admin') {
           if (VALID_CODES.admin[warehouse] !== code) {
             errBox.textContent = `Помилка входу: Невірний код доступу для складу ${warehouse.toUpperCase()}!`;
@@ -598,10 +607,9 @@
         }
       }
 
-      const userName = (lastName && firstName) ? `${lastName} ${firstName}` : (role === 'admin' ? `Адмін (${warehouse.toUpperCase()})` : 'Користувач');
+      const userName = (lastName && firstName) ? `${lastName} ${firstName}` : (role === 'admin' ? `Адмін (${warehouse.toUpperCase()})` : 'Кирилл Лупан');
       currentUser = { role, name: userName, phone, warehouse };
       localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      
       showCabinet();
     }
 
@@ -640,8 +648,19 @@
       document.getElementById('authScreen').classList.remove('hidden');
     }
 
-    // --- АДМИНИСТРАТОР (Створення та перегляд заявок) ---
-    function openCreateRequestModal() { document.getElementById('createRequestModal').classList.remove('hidden'); }
+    // --- АДМИНИСТРАТОР ---
+    function openCreateRequestModal() {
+      const modal = document.getElementById('createRequestModal');
+      const reqLocSelect = document.getElementById('reqLocation');
+      
+      // Автоматическая подстановка склада текущего Админа
+      const adminWarehouseKey = currentUser.warehouse || 'oil';
+      const assignedLocationName = WAREHOUSE_NAMES[adminWarehouseKey] || 'Oil склад';
+
+      reqLocSelect.innerHTML = `<option value="${assignedLocationName}" selected>${assignedLocationName}</option>`;
+      modal.classList.remove('hidden');
+    }
+
     function closeCreateRequestModal() { document.getElementById('createRequestModal').classList.add('hidden'); }
 
     function submitClientRequest(e) {
@@ -659,7 +678,8 @@
         status: 'new',
         managerQuestion: '',
         clientAnswer: '',
-        assignedWorkers: []
+        applicants: [],
+        confirmedWorkers: []
       };
 
       requestsDB.push(newReq);
@@ -712,7 +732,7 @@
       }
     }
 
-    // --- МЕНЕДЖЕР (Управління заявками та білий список) ---
+    // --- МЕНЕДЖЕР ---
     function renderManagerRequests() {
       const container = document.getElementById('managerRequestsList');
       if (requestsDB.length === 0) {
@@ -775,39 +795,61 @@
 
     function removeOutsource(index) { outsourceAccessList.splice(index, 1); saveDB(); renderAccessList(); }
 
-    // --- АУТСОРС (Перегляд смен и отклик) ---
+    // --- АУТСОРС (Смена исчезает при отклике и попадает в Запланированные/Отклики) ---
     function renderOutsourceScreens() {
       const openContainer = document.getElementById('outsourceOpenShiftsList');
-      const published = requestsDB.filter(r => r.status === 'published');
-      openContainer.innerHTML = published.length === 0 ? '<p class="text-slate-400 text-sm italic">Немає відкритих змін.</p>' :
-        published.map(req => `
+      const schedContainer = document.getElementById('outsourceScheduledList');
+
+      // Доступные смены: опубликовали И текущий юзер еще НЕ откликался
+      const openShifts = requestsDB.filter(r => r.status === 'published' && (!r.applicants || !r.applicants.includes(currentUser.name)));
+
+      if (openShifts.length === 0) {
+        openContainer.innerHTML = '<p class="text-slate-400 text-sm italic">Немає доступних відкритих змін.</p>';
+      } else {
+        openContainer.innerHTML = openShifts.map(req => `
           <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
             <h4 class="font-bold text-sm text-slate-900 dark:text-white">${req.location}</h4>
             <p class="text-xs text-slate-500 mt-1">Посада: <strong>${req.position}</strong> | Дата: <strong>${req.date}</strong> (${req.time})</p>
-            <button onclick="outsourceApply('${req.id}')" class="mt-3 px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-semibold">Відгукнутися на зміну</button>
+            <button onclick="outsourceApply('${req.id}')" class="mt-3 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow">Відгукнутися на зміну</button>
           </div>
         `).join('');
+      }
 
-      const schedContainer = document.getElementById('outsourceScheduledList');
-      const assigned = requestsDB.filter(r => r.assignedWorkers && r.assignedWorkers.includes(currentUser.name));
-      schedContainer.innerHTML = assigned.length === 0 ? '<p class="text-slate-400 text-sm italic">У вас поки немає запланованих виходів.</p>' :
-        assigned.map(req => `
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-emerald-500/30 shadow-sm">
-            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 rounded text-xs font-bold">✓ Вихід підтверджено</span>
-            <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-2">${req.location}</h4>
-            <p class="text-xs text-slate-500 mt-1">📅 ${req.date} | ⏰ ${req.time} | Старший: +380670000001</p>
-          </div>
-        `).join('');
+      // Смены, на которые уже откликнулся исполнитель
+      const myAppliedShifts = requestsDB.filter(r => r.applicants && r.applicants.includes(currentUser.name));
+
+      if (myAppliedShifts.length === 0) {
+        schedContainer.innerHTML = '<p class="text-slate-400 text-sm italic">У вас поки немає відгуків або запланованих виходів.</p>';
+      } else {
+        schedContainer.innerHTML = myAppliedShifts.map(req => {
+          const isConfirmed = req.confirmedWorkers && req.confirmedWorkers.includes(currentUser.name);
+          return `
+            <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border ${isConfirmed ? 'border-emerald-500/40' : 'border-indigo-500/30'} shadow-sm">
+              <span class="px-2.5 py-1 rounded-md text-xs font-bold ${isConfirmed ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600'}">
+                ${isConfirmed ? '✓ Вихід підтверджено' : '⏳ Очікує рішення менеджера'}
+              </span>
+              <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-2">${req.location}</h4>
+              <p class="text-xs text-slate-500 mt-1">📅 ${req.date} | ⏰ ${req.time} ${isConfirmed ? '| 📞 Старший: +380670000001' : ''}</p>
+            </div>
+          `;
+        }).join('');
+      }
     }
 
     function outsourceApply(reqId) {
       const req = requestsDB.find(r => r.id == reqId);
-      if (!req.assignedWorkers) req.assignedWorkers = [];
-      if (!req.assignedWorkers.includes(currentUser.name)) {
-        req.assignedWorkers.push(currentUser.name); saveDB(); renderOutsourceScreens();
-        alert('Ваш відгук надіслано менеджеру! Статус: Очікує рішення.');
-      } else {
-        alert('Ви вже відгукнулися на цю зміну.');
+      if (req) {
+        if (!req.applicants) req.applicants = [];
+        if (!req.applicants.includes(currentUser.name)) {
+          req.applicants.push(currentUser.name);
+          // По умолчанию менеджер сразу подтягивает отклик (для теста подтверждаем)
+          if (!req.confirmedWorkers) req.confirmedWorkers = [];
+          req.confirmedWorkers.push(currentUser.name);
+
+          saveDB();
+          renderOutsourceScreens();
+          alert('Ви успішно відгукнулися на зміну! Вона перенесена у ваші виходи.');
+        }
       }
     }
 
@@ -833,7 +875,6 @@
       }
     }
 
-    // Автостарт при загрузке
     window.addEventListener('DOMContentLoaded', () => {
       applyTranslations();
       toggleFormFields();
