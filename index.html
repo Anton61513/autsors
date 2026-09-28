@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Авторизация - Управление складом</title>
+  <title>Система управления складом</title>
   <style>
     :root {
       --bg-color: #f4f6f9;
@@ -206,84 +206,91 @@
       color: var(--error-color);
       border: 1px solid var(--error-color);
     }
+
+    #dashboardView {
+      display: none;
+      text-align: center;
+    }
+
+    .logout-btn {
+      margin-top: 20px;
+      background-color: var(--error-color);
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <!-- Шапка управления (Язык и Тема) -->
+  <!-- ФОРМА АВТОРИЗАЦИИ / РЕГИСТРАЦИИ -->
+  <div class="container" id="authView">
     <div class="top-controls">
       <select id="langSelect" onchange="changeLanguage(this.value)">
-        <option value="ru" selected>Русский</option>
-        <option value="uk">Українська</option>
+        <option value="ru">Русский</option>
+        <option value="uk" selected>Українська</option>
         <option value="en">English</option>
       </select>
-      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Тёмная</button>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Темна</button>
     </div>
 
-    <!-- Заголовок -->
     <div class="header">
       <div class="icon-box">
         <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8subscriptionZ"/></svg>
       </div>
-      <h2 id="title">Авторизация</h2>
-      <p id="subtitle">Управление заявками и персоналом склада</p>
+      <h2 id="title">Авторизація</h2>
+      <p id="subtitle">Управління заявками та персоналом складу</p>
     </div>
 
-    <!-- Переключатель Вход/Регистрация -->
     <div class="tabs">
-      <button class="tab-btn" id="tabLogin" onclick="switchTab('login')">Вход</button>
-      <button class="tab-btn active" id="tabRegister" onclick="switchTab('register')">Регистрация</button>
+      <button class="tab-btn" id="tabLogin" onclick="switchTab('login')">Вхід</button>
+      <button class="tab-btn active" id="tabRegister" onclick="switchTab('register')">Реєстрація</button>
     </div>
 
-    <!-- Блок ошибок -->
     <div class="alert alert-error" id="errorBox"></div>
 
-    <!-- Форма -->
     <form id="authForm" onsubmit="handleSubmit(event)">
       
-      <!-- Поле Роли -->
-      <div class="form-group">
-        <label id="lblRole">Роль при регистрации</label>
+      <!-- Выбор роли -->
+      <div class="form-group" id="roleGroup">
+        <label id="lblRole">Роль</label>
         <select id="roleSelect" onchange="handleRoleChange()">
-          <option value="admin">Администратор</option>
+          <option value="admin">Адміністратор</option>
           <option value="manager">Менеджер</option>
+          <option value="outsource">Аутсорс</option>
         </select>
       </div>
 
-      <!-- Поле Склада (только для Админа) -->
+      <!-- Выбор склада (для Админа) -->
       <div class="form-group" id="warehouseGroup">
-        <label id="lblWarehouse">Выберите свой склад *</label>
+        <label id="lblWarehouse">Оберіть свій склад *</label>
         <select id="warehouseSelect">
-          <option value="" disabled selected>-- Выберите склад --</option>
+          <option value="" disabled selected>-- Оберіть склад --</option>
           <option value="oil">Oil</option>
           <option value="erc">ЕРЦ</option>
-          <option value="murmansk">Мурманская</option>
+          <option value="murmansk">Мурманська</option>
         </select>
       </div>
 
-      <!-- Поле Кода Доступа -->
-      <div class="form-group">
-        <label id="lblCode">Код доступа (для Менеджера/Админа) *</label>
-        <input type="password" id="accessCode" placeholder="•••" required>
+      <!-- Код доступа (для Админа и Менеджера при регистрации, для Админа при входе) -->
+      <div class="form-group" id="codeGroup">
+        <label id="lblCode">Код доступу *</label>
+        <input type="password" id="accessCode" placeholder="•••">
       </div>
 
-      <!-- Имя и Фамилия -->
+      <!-- Имя и Фамилия (Только регистрация) -->
       <div class="row" id="nameRow">
         <div class="form-group">
-          <label id="lblLastName">Фамилия *</label>
-          <input type="text" id="lastName" placeholder="Иванов">
+          <label id="lblLastName">Прізвище *</label>
+          <input type="text" id="lastName" placeholder="Іванов">
         </div>
         <div class="form-group">
-          <label id="lblFirstName">Имя *</label>
-          <input type="text" id="firstName" placeholder="Иван">
+          <label id="lblFirstName">Ім'я *</label>
+          <input type="text" id="firstName" placeholder="Іван">
         </div>
       </div>
 
-      <!-- Номер телефона -->
+      <!-- Телефон -->
       <div class="form-group" id="phoneGroup">
-        <label id="lblPhone">Номер телефона *</label>
-        <input type="tel" id="phone" placeholder="+380000000000">
+        <label id="lblPhone">Номер телефону *</label>
+        <input type="tel" id="phone" placeholder="+380000000000" required>
       </div>
 
       <!-- Пароль -->
@@ -292,25 +299,31 @@
         <input type="password" id="password" placeholder="•••••" required>
       </div>
 
-      <!-- Кнопка -->
-      <button type="submit" class="btn-submit" id="btnSubmit">Зарегистрироваться</button>
+      <button type="submit" class="btn-submit" id="btnSubmit">Зареєструватися</button>
     </form>
   </div>
 
+  <!-- ЛИЧНЫЙ КАБИНЕТ (СОХРАНЯЕТСЯ ПРИ ОБНОВЛЕНИИ СТРАНИЦЫ) -->
+  <div class="container" id="dashboardView">
+    <h2 id="dashWelcome">Вітаємо в системі!</h2>
+    <p id="dashRoleText" style="margin-top: 10px; color: var(--text-secondary);"></p>
+    <button class="btn-submit logout-btn" onclick="logout()" id="btnLogout">Вийти</button>
+  </div>
+
   <script>
-    // --- Локализация ---
     const translations = {
       ru: {
         title: "Авторизация",
         subtitle: "Управление заявками и персоналом склада",
         login: "Вход",
         register: "Регистрация",
-        role: "Роль при регистрации",
+        role: "Роль",
         admin: "Администратор",
         manager: "Менеджер",
+        outsource: "Аутсорс",
         warehouse: "Выберите свой склад *",
         selectWarehouse: "-- Выберите склад --",
-        code: "Код доступа (для Менеджера/Админа) *",
+        code: "Код доступа *",
         lastName: "Фамилия *",
         firstName: "Имя *",
         phone: "Номер телефона *",
@@ -318,22 +331,26 @@
         btnRegister: "Зарегистрироваться",
         btnLogin: "Войти",
         errWarehouseRequired: "Пожалуйста, выберите склад!",
-        errInvalidCode: "Введен неверный код доступа!",
+        errInvalidCode: "Введен неверный код доступа для выбранного склада!",
         themeDark: "🌙 Тёмная",
         themeLight: "☀️ Светлая",
-        successReg: "Регистрация успешно пройдена!"
+        successReg: "Регистрация успешно пройдена!",
+        successLogin: "Успешный вход в систему!",
+        dashWelcome: "Добро пожаловать в систему!",
+        btnLogout: "Выйти"
       },
       uk: {
         title: "Авторизація",
         subtitle: "Управління заявками та персоналом складу",
         login: "Вхід",
         register: "Реєстрація",
-        role: "Роль при реєстрації",
+        role: "Роль",
         admin: "Адміністратор",
         manager: "Менеджер",
+        outsource: "Аутсорс",
         warehouse: "Оберіть свій склад *",
         selectWarehouse: "-- Оберіть склад --",
-        code: "Код доступу (для Менеджера/Адміна) *",
+        code: "Код доступу *",
         lastName: "Прізвище *",
         firstName: "Ім'я *",
         phone: "Номер телефону *",
@@ -341,22 +358,26 @@
         btnRegister: "Зареєструватися",
         btnLogin: "Увійти",
         errWarehouseRequired: "Будь ласка, оберіть склад!",
-        errInvalidCode: "Введено невірний код доступу!",
+        errInvalidCode: "Введено невірний код доступу для обраного складу!",
         themeDark: "🌙 Темна",
         themeLight: "☀️ Світла",
-        successReg: "Реєстрацію успішно пройдено!"
+        successReg: "Реєстрацію успішно пройдено!",
+        successLogin: "Успішний вхід у систему!",
+        dashWelcome: "Вітаємо в системі!",
+        btnLogout: "Вийти"
       },
       en: {
         title: "Authorization",
         subtitle: "Warehouse management system",
         login: "Sign In",
         register: "Register",
-        role: "Registration Role",
+        role: "Role",
         admin: "Administrator",
         manager: "Manager",
+        outsource: "Outsource",
         warehouse: "Select your warehouse *",
         selectWarehouse: "-- Select warehouse --",
-        code: "Access Code (Manager/Admin) *",
+        code: "Access Code *",
         lastName: "Last Name *",
         firstName: "First Name *",
         phone: "Phone Number *",
@@ -364,17 +385,20 @@
         btnRegister: "Register",
         btnLogin: "Sign In",
         errWarehouseRequired: "Please select a warehouse!",
-        errInvalidCode: "Invalid access code!",
+        errInvalidCode: "Invalid access code for the selected warehouse!",
         themeDark: "🌙 Dark",
         themeLight: "☀️ Light",
-        successReg: "Registration successful!"
+        successReg: "Registration successful!",
+        successLogin: "Successfully logged in!",
+        dashWelcome: "Welcome to the system!",
+        btnLogout: "Log out"
       }
     };
 
-    let currentLang = 'ru';
+    let currentLang = 'uk';
     let currentMode = 'register';
 
-    // --- Валидация кодов доступа ---
+    // Коды доступа по складам
     const VALID_CODES = {
       manager: "111",
       admin: {
@@ -384,21 +408,52 @@
       }
     };
 
+    // Переключение отображения полей
     function handleRoleChange() {
       const role = document.getElementById('roleSelect').value;
       const warehouseGroup = document.getElementById('warehouseGroup');
       const warehouseSelect = document.getElementById('warehouseSelect');
-      
-      if (role === 'admin') {
-        warehouseGroup.style.display = 'block';
-        warehouseSelect.required = true;
+      const codeGroup = document.getElementById('codeGroup');
+      const accessCode = document.getElementById('accessCode');
+
+      if (currentMode === 'register') {
+        if (role === 'admin') {
+          warehouseGroup.style.display = 'block';
+          codeGroup.style.display = 'block';
+          warehouseSelect.required = true;
+          accessCode.required = true;
+        } else if (role === 'manager') {
+          warehouseGroup.style.display = 'none';
+          codeGroup.style.display = 'block';
+          warehouseSelect.required = false;
+          warehouseSelect.value = "";
+          accessCode.required = true;
+        } else {
+          // Аутсорс
+          warehouseGroup.style.display = 'none';
+          codeGroup.style.display = 'none';
+          warehouseSelect.required = false;
+          accessCode.required = false;
+        }
       } else {
-        warehouseGroup.style.display = 'none';
-        warehouseSelect.required = false;
-        warehouseSelect.value = "";
+        // Режим Входа
+        if (role === 'admin') {
+          // Админ на входе ОБЯЗАТЕЛЬНО выбирает склад и вводит код доступа
+          warehouseGroup.style.display = 'block';
+          codeGroup.style.display = 'block';
+          warehouseSelect.required = true;
+          accessCode.required = true;
+        } else {
+          // Менеджер и Аутсорс входят только по телефону и паролю
+          warehouseGroup.style.display = 'none';
+          codeGroup.style.display = 'none';
+          warehouseSelect.required = false;
+          accessCode.required = false;
+        }
       }
     }
 
+    // Переключение вкладок Вход / Регистрация
     function switchTab(mode) {
       currentMode = mode;
       document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
@@ -406,7 +461,6 @@
       
       const isReg = mode === 'register';
       document.getElementById('nameRow').style.display = isReg ? 'flex' : 'none';
-      document.getElementById('phoneGroup').style.display = isReg ? 'block' : 'none';
       
       handleRoleChange();
       
@@ -415,6 +469,7 @@
       hideError();
     }
 
+    // Валидация формы при отправке
     function handleSubmit(e) {
       e.preventDefault();
       hideError();
@@ -422,30 +477,85 @@
       const role = document.getElementById('roleSelect').value;
       const warehouse = document.getElementById('warehouseSelect').value;
       const code = document.getElementById('accessCode').value.trim();
+      const phone = document.getElementById('phone').value.trim();
       const lang = translations[currentLang];
 
       if (currentMode === 'register') {
-        // Проверка заполнения склада для админа
-        if (role === 'admin' && !warehouse) {
-          showError(lang.errWarehouseRequired);
-          return;
+        // РЕГИСТРАЦИЯ
+        if (role === 'admin') {
+          if (!warehouse) {
+            showError(lang.errWarehouseRequired);
+            return;
+          }
+          if (VALID_CODES.admin[warehouse] !== code) {
+            showError(lang.errInvalidCode);
+            return;
+          }
+        } else if (role === 'manager') {
+          if (code !== VALID_CODES.manager) {
+            showError(lang.errInvalidCode);
+            return;
+          }
         }
 
-        // Проверка кодов доступа
-        let isValid = false;
-        if (role === 'manager' && code === VALID_CODES.manager) {
-          isValid = true;
-        } else if (role === 'admin' && VALID_CODES.admin[warehouse] === code) {
-          isValid = true;
+        alert(lang.successReg);
+        saveSession(phone, role, warehouse);
+
+      } else {
+        // ВХОД
+        if (role === 'admin') {
+          // Проверка склада и кода для админа при входе!
+          if (!warehouse) {
+            showError(lang.errWarehouseRequired);
+            return;
+          }
+          if (VALID_CODES.admin[warehouse] !== code) {
+            showError(lang.errInvalidCode);
+            return;
+          }
         }
 
-        if (!isValid) {
-          showError(lang.errInvalidCode);
-          return;
-        }
+        alert(lang.successLogin);
+        saveSession(phone, role, warehouse);
       }
+    }
 
-      alert(lang.successReg);
+    // Сохранение авторизации в браузер
+    function saveSession(phone, role, warehouse) {
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('userPhone', phone);
+      localStorage.setItem('userRole', role);
+      localStorage.setItem('userWarehouse', warehouse || '');
+      checkSession();
+    }
+
+    // Проверка сессии при открытии/обновлении страницы
+    function checkSession() {
+      const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+      const authView = document.getElementById('authView');
+      const dashboardView = document.getElementById('dashboardView');
+
+      if (isLoggedIn) {
+        authView.style.display = 'none';
+        dashboardView.style.display = 'block';
+        const role = localStorage.getItem('userRole') || '';
+        const warehouse = localStorage.getItem('userWarehouse') || '';
+        const warehouseText = warehouse ? ` [Склад: ${warehouse.toUpperCase()}]` : '';
+        
+        document.getElementById('dashRoleText').innerText = `Сесія активна: ${role.toUpperCase()}${warehouseText}`;
+      } else {
+        authView.style.display = 'block';
+        dashboardView.style.display = 'none';
+      }
+    }
+
+    // Выход из системы
+    function logout() {
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userPhone');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userWarehouse');
+      checkSession();
     }
 
     function showError(msg) {
@@ -458,7 +568,7 @@
       document.getElementById('errorBox').style.display = 'none';
     }
 
-    // --- Переключение языков ---
+    // Языковой менеджер
     function changeLanguage(langKey) {
       currentLang = langKey;
       const lang = translations[langKey];
@@ -468,6 +578,12 @@
       document.getElementById('tabLogin').innerText = lang.login;
       document.getElementById('tabRegister').innerText = lang.register;
       document.getElementById('lblRole').innerText = lang.role;
+      
+      const roleSelect = document.getElementById('roleSelect');
+      roleSelect.options[0].text = lang.admin;
+      roleSelect.options[1].text = lang.manager;
+      roleSelect.options[2].text = lang.outsource;
+
       document.getElementById('lblWarehouse').innerText = lang.warehouse;
       document.getElementById('warehouseSelect').options[0].text = lang.selectWarehouse;
       document.getElementById('lblCode').innerText = lang.code;
@@ -476,13 +592,15 @@
       document.getElementById('lblPhone').innerText = lang.phone;
       document.getElementById('lblPassword').innerText = lang.password;
       document.getElementById('btnSubmit').innerText = currentMode === 'register' ? lang.btnRegister : lang.btnLogin;
+      document.getElementById('dashWelcome').innerText = lang.dashWelcome;
+      document.getElementById('btnLogout').innerText = lang.btnLogout;
 
       const themeBtn = document.getElementById('themeBtn');
       const isDark = document.body.getAttribute('data-theme') === 'dark';
       themeBtn.innerText = isDark ? lang.themeLight : lang.themeDark;
     }
 
-    // --- Переключение темы ---
+    // Переключение темы
     function toggleTheme() {
       const body = document.body;
       const themeBtn = document.getElementById('themeBtn');
@@ -497,7 +615,9 @@
       }
     }
 
-    // Инициализация
+    // Запуск
+    checkSession();
+    changeLanguage('uk');
     handleRoleChange();
   </script>
 </body>
