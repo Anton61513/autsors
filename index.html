@@ -241,9 +241,17 @@
 
   <!-- ================= MANAGER SCREEN ================= -->
   <main id="managerScreen" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 hidden">
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6">
-      <h2 class="text-xl font-bold text-slate-900 dark:text-white" data-i18n="managerCabinetTitle">Кабінет Менеджера</h2>
-      <p class="text-sm text-slate-500 dark:text-slate-400" data-i18n="managerCabinetSubtitle">Обробка заявок, підбір персоналу та контроль списків доступу.</p>
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6 flex justify-between items-center flex-wrap gap-4">
+      <div>
+        <h2 class="text-xl font-bold text-slate-900 dark:text-white" data-i18n="managerCabinetTitle">Кабінет Менеджера</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400" data-i18n="managerCabinetSubtitle">Обробка заявок, підбір персоналу та контроль списків доступу.</p>
+      </div>
+
+      <!-- Кнопка очистки заявок -->
+      <button onclick="openCleanupModal()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-semibold shadow transition flex items-center space-x-1.5">
+        <i class="fa-solid fa-broom"></i>
+        <span>🧹 Очистити / Архівувати заявки</span>
+      </button>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -252,7 +260,7 @@
         <div id="managerRequestsList" class="space-y-4"></div>
       </div>
 
-      <!-- Вкладки Доступа: Белый список / Чорный список -->
+      <!-- Вкладки Доступа -->
       <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm h-fit">
         <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg mb-3 text-xs font-semibold">
           <button id="btnTabWhite" onclick="switchAccessTab('white')" class="flex-1 py-1.5 rounded-md text-center bg-white dark:bg-slate-700 text-indigo-600 shadow-sm">⚪ Білий список</button>
@@ -282,7 +290,41 @@
   </main>
 
 
-  <!-- MODAL: Обмеження доступу (Бан на склады / Полный бан) -->
+  <!-- MODAL: Очистка заявок -->
+  <div id="cleanupModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-md w-full p-6 shadow-2xl space-y-4">
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-base text-slate-900 dark:text-white">🧹 Очищення та Архівування заявок</h3>
+        <button onclick="closeCleanupModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="space-y-2">
+        <button onclick="cleanupLastWeek()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition">
+          📅 Видалити за останній тиждень (21.09.2026 – 28.09.2026)
+        </button>
+      </div>
+
+      <div class="border-t dark:border-slate-800 pt-3">
+        <p class="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">Або виберіть свій діапазон дат:</p>
+        <div class="grid grid-cols-2 gap-2 text-xs">
+          <div>
+            <label class="block text-[10px] text-slate-400 uppercase">З дати</label>
+            <input type="date" id="cleanStartDate" value="2026-09-21" class="w-full p-2 border rounded dark:bg-slate-800 dark:border-slate-700">
+          </div>
+          <div>
+            <label class="block text-[10px] text-slate-400 uppercase">По дату</label>
+            <input type="date" id="cleanEndDate" value="2026-09-28" class="w-full p-2 border rounded dark:bg-slate-800 dark:border-slate-700">
+          </div>
+        </div>
+        <button onclick="cleanupCustomRange()" class="w-full mt-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold transition">
+          Видалити за обраний період
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- MODAL: Обмеження доступу -->
   <div id="banModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-md w-full p-6 shadow-2xl">
       <h3 class="font-bold text-base text-slate-900 dark:text-white mb-2">🚫 Обмеження доступу аутсорс</h3>
@@ -307,7 +349,7 @@
   </div>
 
 
-  <!-- MODAL: Внести коррективы (Резерв + Корректировка количества) -->
+  <!-- MODAL: Внести коррективы -->
   <div id="editReserveModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 shadow-2xl">
       <div class="flex justify-between items-center mb-3">
@@ -317,7 +359,6 @@
 
       <p id="editReqInfo" class="text-xs text-indigo-600 font-semibold mb-3"></p>
 
-      <!-- Шаг 1 -->
       <div id="reserveStep1" class="space-y-4 text-xs">
         <div class="bg-indigo-50 dark:bg-indigo-950/30 p-3 rounded-lg border border-indigo-200 dark:border-indigo-800">
           <span class="text-slate-600 dark:text-slate-400">Доступний резерв на цю дату:</span>
@@ -339,7 +380,6 @@
         </div>
       </div>
 
-      <!-- Шаг 2 -->
       <div id="reserveStep2" class="space-y-3 text-xs hidden">
         <p class="font-semibold text-slate-700 dark:text-slate-300">Оберіть людей з резерву для підтвердження броні:</p>
         <div id="reservePeopleList" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar"></div>
@@ -537,6 +577,11 @@
       }
     };
 
+    // БАЗА ПОЛЬЗОВАТЕЛЕЙ С ПАРОЛЯМИ
+    let registeredUsersDB = JSON.parse(localStorage.getItem('registeredUsersDB')) || [
+      { phone: "0000000003", pass: "123456", name: "Кирилл Лупан", role: "outsource" }
+    ];
+
     let outsourceAccessList = JSON.parse(localStorage.getItem('outsourceList')) || [
       { name: "Кирилл Лупан", phone: "0000000003" },
       { name: "Иванна Грибанова", phone: "0000000004" },
@@ -585,6 +630,7 @@
       localStorage.setItem('outsourceList', JSON.stringify(outsourceAccessList));
       localStorage.setItem('outsourceBlackList', JSON.stringify(outsourceBlackList));
       localStorage.setItem('adminNotifications', JSON.stringify(adminNotifications));
+      localStorage.setItem('registeredUsersDB', JSON.stringify(registeredUsersDB));
     }
 
     function toggleTheme() { document.documentElement.classList.toggle('dark'); }
@@ -635,12 +681,14 @@
       document.getElementById('outsourceNotice').classList.toggle('hidden', !(role === 'outsource' && isReg));
     }
 
+    // --- АВТОРИЗАЦИЯ И ПРОВЕРКА ПАРОЛЕЙ ---
     function handleAuthSubmit(e) {
       e.preventDefault();
       const role = document.getElementById('authRole').value;
       const warehouse = document.getElementById('authWarehouse').value;
       const code = document.getElementById('authAccessCode').value.trim();
       const phone = document.getElementById('authPhone').value.trim();
+      const password = document.getElementById('authPassword').value.trim();
       const lastName = document.getElementById('authLastName').value.trim();
       const firstName = document.getElementById('authFirstName').value.trim();
       const errBox = document.getElementById('authErrorMsg');
@@ -648,6 +696,7 @@
 
       const cleanPhone = phone.replace(/\D/g, '');
 
+      // Проверка на Полный Бан (заблокирован на ВСЕХ складах)
       if (role === 'outsource') {
         const isFullBanned = outsourceBlackList.find(b => b.phone.replace(/\D/g, '') === cleanPhone && b.isFullBan);
         if (isFullBanned) {
@@ -660,7 +709,7 @@
       if (currentAuthMode === 'register') {
         if (role === 'admin') {
           if (VALID_CODES.admin[warehouse] !== code) {
-            errBox.textContent = `Помилка: Невірний код доступу для складу ${warehouse.toUpperCase()}! (Потрібен код ${VALID_CODES.admin[warehouse]})`;
+            errBox.textContent = `Помилка: Невірний код доступу для складу ${warehouse.toUpperCase()}!`;
             errBox.classList.remove('hidden');
             return;
           }
@@ -678,7 +727,18 @@
             return;
           }
         }
+
+        // Сохранение нового пользователя с паролем
+        const userName = (lastName && firstName) ? `${lastName} ${firstName}` : (role === 'admin' ? `Адмін (${warehouse.toUpperCase()})` : 'Кирилл Лупан');
+        registeredUsersDB.push({ phone: cleanPhone, pass: password, name: userName, role: role });
+        saveDB();
+
+        currentUser = { role, name: userName, phone: cleanPhone, warehouse };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        showCabinet();
+
       } else {
+        // ВХОД В АККАУНТ И СТРОГАЯ ПРОВЕРКА ПАРОЛЯ
         if (role === 'admin') {
           if (VALID_CODES.admin[warehouse] !== code) {
             errBox.textContent = `Помилка входу: Невірний код доступу для складу ${warehouse.toUpperCase()}!`;
@@ -686,12 +746,21 @@
             return;
           }
         }
-      }
 
-      const userName = (lastName && firstName) ? `${lastName} ${firstName}` : (role === 'admin' ? `Адмін (${warehouse.toUpperCase()})` : 'Кирилл Лупан');
-      currentUser = { role, name: userName, phone, warehouse };
-      localStorage.setItem('currentUser', JSON.stringify(currentUser));
-      showCabinet();
+        const existingUser = registeredUsersDB.find(u => u.phone === cleanPhone);
+        if (existingUser) {
+          if (existingUser.pass !== password) {
+            errBox.textContent = 'Помилка: Невірний пароль!';
+            errBox.classList.remove('hidden');
+            return;
+          }
+        }
+
+        const userName = existingUser ? existingUser.name : (role === 'admin' ? `Адмін (${warehouse.toUpperCase()})` : 'Кирилл Лупан');
+        currentUser = { role, name: userName, phone: cleanPhone, warehouse };
+        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+        showCabinet();
+      }
     }
 
     function showCabinet() {
@@ -839,34 +908,49 @@
       }
     }
 
-    // --- МЕНЕДЖЕР ---
+    // --- МЕНЕДЖЕР: НОВЫЕ ЗАЯВКИ НАВЕРХУ + ВЫДЕЛЕНИЕ КРАСНЫМ ВОСКЛИЦАТЕЛЬНЫМ ЗНАКОМ ---
     function renderManagerRequests() {
       const container = document.getElementById('managerRequestsList');
       if (requestsDB.length === 0) {
         container.innerHTML = '<p class="text-slate-400 text-sm italic">Немає вхідних заявок.</p>';
         return;
       }
-      container.innerHTML = requestsDB.map(req => {
+
+      // Сортировка: Сначала НОВЫЕ заявки ('new')
+      const sortedRequests = [...requestsDB].sort((a, b) => {
+        if (a.status === 'new' && b.status !== 'new') return -1;
+        if (a.status !== 'new' && b.status === 'new') return 1;
+        return 0;
+      });
+
+      container.innerHTML = sortedRequests.map(req => {
         const total = req.totalCount || req.count || 1;
         const needed = req.neededForOutsource !== undefined ? req.neededForOutsource : total;
         const resCount = req.reservedCount || 0;
+        const isNew = req.status === 'new';
         const isInWork = req.status === 'in_work' || req.status === 'published';
 
         return `
-          <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <div class="flex justify-between items-start mb-2">
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border ${isNew ? 'border-rose-500 shadow-md ring-1 ring-rose-500/30' : 'border-slate-200 dark:border-slate-800'} relative shadow-sm">
+            ${isNew ? `
+              <div class="absolute -top-3 -left-2 bg-rose-600 text-white w-7 h-7 rounded-full flex items-center justify-center font-black text-sm shadow-lg animate-bounce" title="Нова заявка!">
+                !
+              </div>
+            ` : ''}
+
+            <div class="flex justify-between items-start mb-2 pl-3">
               <div>
                 <span class="text-xs font-bold text-indigo-600">Заявка №${req.id} (${req.clientName})</span>
                 <h4 class="font-bold text-slate-900 dark:text-white text-base">${req.location} — ${req.position}</h4>
               </div>
               <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusBadge(req.status)}">${getStatusText(req.status)}</span>
             </div>
-            <p class="text-xs text-slate-500 mb-3">📅 ${req.date} | ⏰ ${req.time} | 👥 Всього: <strong>${total} чол.</strong> | Для аутсорса: <strong class="text-indigo-600">${needed} чол.</strong> ${resCount > 0 ? `(Резерв: ${resCount})` : ''}</p>
-            ${req.clientAnswer ? `<p class="text-xs text-emerald-600 mb-3"><strong>Відповідь адміна:</strong> ${req.clientAnswer}</p>` : ''}
+            <p class="text-xs text-slate-500 mb-3 pl-3">📅 ${req.date} | ⏰ ${req.time} | 👥 Всього: <strong>${total} чол.</strong> | Для аутсорса: <strong class="text-indigo-600">${needed} чол.</strong> ${resCount > 0 ? `(Резерв: ${resCount})` : ''}</p>
+            ${req.clientAnswer ? `<p class="text-xs text-emerald-600 mb-3 pl-3"><strong>Відповідь адміна:</strong> ${req.clientAnswer}</p>` : ''}
             
             <div class="flex flex-wrap gap-2 pt-2 border-t dark:border-slate-800">
               ${!isInWork ? `
-                <button onclick="managerTakeInWork('${req.id}')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-semibold flex items-center space-x-1">
+                <button onclick="managerTakeInWork('${req.id}')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-semibold flex items-center space-x-1 shadow">
                   <i class="fa-solid fa-gears"></i>
                   <span>Взяти в роботу</span>
                 </button>
@@ -993,7 +1077,42 @@
       req.status = 'published';
       saveDB();
       renderManagerRequests();
-      alert(`Зміну №${req.id} опубліковано для аутсорса! (Потреба: ${req.neededForOutsource || req.totalCount} чол.)`);
+      alert(`Зміну №${req.id} опубліковано для аутсорса!`);
+    }
+
+    // --- ФУНКЦИИ ОЧИСТКИ ЗАЯВОК (Архивация) ---
+    function openCleanupModal() { document.getElementById('cleanupModal').classList.remove('hidden'); }
+    function closeCleanupModal() { document.getElementById('cleanupModal').classList.add('hidden'); }
+
+    function cleanupLastWeek() {
+      const startDate = "2026-09-21";
+      const endDate = "2026-09-28";
+      filterAndRemoveRequestsByDate(startDate, endDate);
+    }
+
+    function cleanupCustomRange() {
+      const start = document.getElementById('cleanStartDate').value;
+      const end = document.getElementById('cleanEndDate').value;
+      if (!start || !end) return alert('Вкажіть обидві дати!');
+      filterAndRemoveRequestsByDate(start, end);
+    }
+
+    function filterAndRemoveRequestsByDate(startDateStr, endDateStr) {
+      const start = new Date(startDateStr);
+      const end = new Date(endDateStr);
+
+      const originalLen = requestsDB.length;
+      requestsDB = requestsDB.filter(req => {
+        const reqDate = new Date(req.date);
+        return reqDate < start || reqDate > end;
+      });
+
+      const removedCount = originalLen - requestsDB.length;
+      saveDB();
+      closeCleanupModal();
+      renderManagerRequests();
+      if (currentUser && currentUser.role === 'admin') renderAdminRequests();
+      alert(`Успішно очищено ${removedCount} заявок за вказаний період!`);
     }
 
 
@@ -1141,7 +1260,7 @@
       alert(`Користувача ${user.name} розблоковано та повернуто у білий список!`);
     }
 
-    // --- АУТСОРС (ИСПРАВЛЕННАЯ ФУНКЦИЯ) ---
+    // --- АУТСОРС (С ДИНАМИЧЕСКИМ ПОКАЗОМ И ПРОВЕРКОЙ БАНОВ ПО СКЛАДАМ) ---
     function renderOutsourceScreens() {
       const openContainer = document.getElementById('outsourceOpenShiftsList');
       const schedContainer = document.getElementById('outsourceScheduledList');
@@ -1151,8 +1270,6 @@
 
       const openShifts = requestsDB.filter(req => {
         const isPublished = req.status === 'published';
-        
-        // Корректное определение нужного количества
         const needed = req.neededForOutsource !== undefined ? req.neededForOutsource : (req.totalCount || req.count || 1);
         const hasSlots = needed > 0;
         
@@ -1229,7 +1346,7 @@
 
     function getStatusBadge(status) {
       switch(status) {
-        case 'new': return 'bg-blue-500/10 text-blue-600 border border-blue-500/20';
+        case 'new': return 'bg-rose-500/10 text-rose-600 border border-rose-500/20 font-bold';
         case 'in_work': return 'bg-indigo-500/10 text-indigo-600 border border-indigo-500/20';
         case 'clarification': return 'bg-amber-500/10 text-amber-600 border border-amber-500/20';
         case 'clarification_received': return 'bg-teal-500/10 text-teal-600 border border-teal-500/20';
