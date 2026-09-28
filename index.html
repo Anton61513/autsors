@@ -1,698 +1,504 @@
 <!DOCTYPE html>
-<html lang="ru" class="light">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Портал Управления — «Гарні речі»</title>
-
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { darkMode: 'class' }
-  </script>
-
-  <!-- FontAwesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
-
+  <title>Авторизация - Управление складом</title>
   <style>
-    body { font-family: 'Inter', sans-serif; }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
+    :root {
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --text-color: #1a1a1a;
+      --text-secondary: #666666;
+      --border-color: #dcdfe6;
+      --input-bg: #ffffff;
+      --primary-color: #5b46f6;
+      --primary-hover: #4834e0;
+      --error-color: #e74c3c;
+      --error-bg: #fde8e8;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    [data-theme="dark"] {
+      --bg-color: #121214;
+      --card-bg: #1e1e24;
+      --text-color: #f1f1f1;
+      --text-secondary: #999999;
+      --border-color: #33333e;
+      --input-bg: #16161a;
+      --primary-color: #6c5ce7;
+      --primary-hover: #5849e0;
+      --error-color: #ff6b6b;
+      --error-bg: #3c1e1e;
+      --shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 440px;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: var(--shadow);
+      position: relative;
+    }
+
+    .top-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .top-controls select, .theme-btn {
+      background: var(--input-bg);
+      color: var(--text-color);
+      border: 1px solid var(--border-color);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .icon-box {
+      width: 56px;
+      height: 56px;
+      background: var(--primary-color);
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .icon-box svg {
+      width: 28px;
+      height: 28px;
+      fill: #ffffff;
+    }
+
+    .header h2 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .header p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .tabs {
+      display: flex;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 20px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background-color: var(--card-bg);
+      color: var(--primary-color);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-color);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      border-color: var(--primary-color);
+    }
+
+    .row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .row .form-group {
+      flex: 1;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background-color: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .btn-submit:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .alert-error {
+      background-color: var(--error-bg);
+      color: var(--error-color);
+      border: 1px solid var(--error-color);
+    }
   </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col antialiased transition-colors duration-200">
+<body>
 
-  <!-- TOP HEADER -->
-  <header id="appHeader" class="bg-slate-900 border-b dark:border-slate-800 text-white shadow-md sticky top-0 z-30 hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="bg-indigo-600 text-white p-2 rounded-lg font-bold flex items-center justify-center w-10 h-10 shadow">
-          <i class="fa-solid fa-boxes-stacked text-lg"></i>
-        </div>
-        <div>
-          <h1 class="font-bold text-lg leading-tight tracking-tight">«Гарні речі» — Портал</h1>
-          <p id="headerRoleBadge" class="text-xs text-indigo-300 font-medium">Роль: Менеджер</p>
-        </div>
-      </div>
-      <div class="flex items-center space-x-3 sm:space-x-4">
-        <span class="text-xs text-slate-300 font-medium" id="headerUserName">Антоний Ганчин</span>
-        <button onclick="toggleTheme()" class="p-2 bg-slate-800 hover:bg-slate-700 text-amber-400 rounded-lg border border-slate-700 transition">
-          <i class="fa-solid fa-sun dark:hidden"></i>
-          <i class="fa-solid fa-moon hidden dark:block text-indigo-300"></i>
-        </button>
-        <button onclick="logout()" class="px-3 py-1.5 bg-rose-600/20 hover:bg-rose-600 text-rose-300 hover:text-white border border-rose-500/30 rounded-lg text-xs font-medium transition flex items-center space-x-1.5">
-          <i class="fa-solid fa-right-from-bracket"></i>
-          <span>Выйти</span>
-        </button>
-      </div>
+  <div class="container">
+    <!-- Шапка управления (Язык и Тема) -->
+    <div class="top-controls">
+      <select id="langSelect" onchange="changeLanguage(this.value)">
+        <option value="ru" selected>Русский</option>
+        <option value="uk">Українська</option>
+        <option value="en">English</option>
+      </select>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙 Тёмная</button>
     </div>
-  </header>
 
-  <!-- AUTH SCREEN -->
-  <section id="authScreen" class="flex-1 flex flex-col items-center justify-center p-4">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 max-w-md w-full p-6 sm:p-8">
+    <!-- Заголовок -->
+    <div class="header">
+      <div class="icon-box">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8subscriptionZ"/></svg>
+      </div>
+      <h2 id="title">Авторизация</h2>
+      <p id="subtitle">Управление заявками и персоналом склада</p>
+    </div>
+
+    <!-- Переключатель Вход/Регистрация -->
+    <div class="tabs">
+      <button class="tab-btn" id="tabLogin" onclick="switchTab('login')">Вход</button>
+      <button class="tab-btn active" id="tabRegister" onclick="switchTab('register')">Регистрация</button>
+    </div>
+
+    <!-- Блок ошибок -->
+    <div class="alert alert-error" id="errorBox"></div>
+
+    <!-- Форма -->
+    <form id="authForm" onsubmit="handleSubmit(event)">
       
-      <div class="text-center mb-6">
-        <div class="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg text-2xl">
-          <i class="fa-solid fa-shield-halved"></i>
-        </div>
-        <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Авторизация</h2>
-        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Управление заявками и персоналом склада</p>
+      <!-- Поле Роли -->
+      <div class="form-group">
+        <label id="lblRole">Роль при регистрации</label>
+        <select id="roleSelect" onchange="handleRoleChange()">
+          <option value="admin">Администратор</option>
+          <option value="manager">Менеджер</option>
+        </select>
       </div>
 
-      <!-- Tabs Switcher -->
-      <div class="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex mb-6 text-sm font-medium">
-        <button id="btnAuthLogin" onclick="setAuthMode('login')" class="flex-1 py-2 rounded-lg text-center transition-all bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-300 shadow-sm font-semibold">Вход</button>
-        <button id="btnAuthRegister" onclick="setAuthMode('register')" class="flex-1 py-2 rounded-lg text-center transition-all text-slate-400 hover:text-white">Регистрация</button>
+      <!-- Поле Склада (только для Админа) -->
+      <div class="form-group" id="warehouseGroup">
+        <label id="lblWarehouse">Выберите свой склад *</label>
+        <select id="warehouseSelect">
+          <option value="" disabled selected>-- Выберите склад --</option>
+          <option value="oil">Oil</option>
+          <option value="erc">ЕРЦ</option>
+          <option value="murmansk">Мурманская</option>
+        </select>
       </div>
 
-      <!-- LOGIN FORM -->
-      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Роль</label>
-          <select id="loginRole" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
-            <option value="client">Заказчик (Клиент)</option>
-            <option value="manager">Менеджер по персоналу</option>
-            <option value="admin">Администратор</option>
-            <option value="outsource">Исполнитель (Аутсорс)</option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Номер телефона</label>
-          <input type="text" id="loginPhone" required value="+380671354296" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
-        </div>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Пароль</label>
-          <input type="password" id="loginPassword" required placeholder="••••••••" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
-        </div>
-        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm transition shadow-lg">Войти в аккаунт</button>
-      </form>
-
-      <!-- REGISTRATION FORM -->
-      <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Роль при регистрации</label>
-          <select id="regRole" onchange="toggleRegFields()" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
-            <option value="client">Заказчик (Клиент)</option>
-            <option value="manager">Менеджер</option>
-            <option value="admin">Администратор</option>
-            <option value="outsource">Исполнитель (Аутсорс)</option>
-          </select>
-        </div>
-
-        <div id="accessCodeContainer">
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Код доступа (для Менеджера/Админа)</label>
-          <input type="password" id="regAccessCode" placeholder="Введите код (111 или 222)" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
-        </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Фамилия *</label>
-            <input type="text" id="regLastName" required placeholder="Ганчин" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Имя *</label>
-            <input type="text" id="regFirstName" required placeholder="Антоний" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Номер телефона *</label>
-          <input type="tel" id="regPhone" required value="" placeholder="0000000004" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1">Пароль *</label>
-          <input type="password" id="regPassword" required placeholder="••••••••" class="w-full px-3 py-2.5 border border-slate-300 dark:border-slate-700 rounded-lg text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none">
-        </div>
-
-        <div id="outsourceNotice" class="p-3 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-lg text-xs text-amber-800 dark:text-amber-200 leading-relaxed hidden">
-          <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-1"></i>
-          Для регистрации Аутсорс-сотрудника менеджер должен заранее внести ваши ФИО и телефон в белый список доступа.
-        </div>
-
-        <div id="authErrorMsg" class="p-3 bg-rose-50 border border-rose-200 rounded-lg text-xs text-rose-600 font-medium hidden"></div>
-
-        <button type="submit" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl text-sm transition shadow-lg">Зарегистрироваться</button>
-      </form>
-
-    </div>
-  </section>
-
-  <!-- ================= CLIENT SCREEN (Заказчик) ================= -->
-  <main id="clientScreen" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 hidden">
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h2 class="text-xl font-bold text-slate-900 dark:text-white">Кабинет Заказчика</h2>
-        <p class="text-sm text-slate-500 dark:text-slate-400">Создание заявок на персонал и контроль статусов выполнения.</p>
-      </div>
-      <button onclick="openCreateRequestModal()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-semibold shadow transition flex items-center space-x-2">
-        <i class="fa-solid fa-plus"></i>
-        <span>Створити заявку</span>
-      </button>
-    </div>
-
-    <!-- Список заявок клиента -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <div class="lg:col-span-2 space-y-4">
-        <h3 class="font-bold text-slate-900 dark:text-white">Мої заявки</h3>
-        <div id="clientRequestsList" class="space-y-4">
-          <!-- Динамически заполняется -->
-        </div>
-      </div>
-      <div>
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <h4 class="font-semibold text-sm mb-2 text-slate-900 dark:text-white"><i class="fa-solid fa-circle-info text-indigo-500 mr-1.5"></i> Правила локаций</h4>
-          <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Вам доступны только те локации склада, которые закреплены за вашим аккаунтом (например: Мурманська, Ельворті, Ангар).</p>
-        </div>
-      </div>
-    </div>
-  </main>
-
-  <!-- MODAL: Создание заявки клиентом -->
-  <div id="createRequestModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto custom-scrollbar">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="font-bold text-lg text-slate-900 dark:text-white">Створення заявки на персонал</h3>
-        <button onclick="closeCreateRequestModal()" class="text-slate-400 hover:text-slate-600 dark:hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      <!-- Поле Кода Доступа -->
+      <div class="form-group">
+        <label id="lblCode">Код доступа (для Менеджера/Админа) *</label>
+        <input type="password" id="accessCode" placeholder="•••" required>
       </div>
 
-      <form id="requestForm" onsubmit="submitClientRequest(event)" class="space-y-4 text-sm">
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Локація</label>
-          <select id="reqLocation" class="w-full px-3 py-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700">
-            <option value="Мурманська склад тканин">Мурманська</option>
-            <option value="Ельворті склад фурнітури">Ельворті</option>
-            <option value="Ангар центральний">Ангар</option>
-          </select>
+      <!-- Имя и Фамилия -->
+      <div class="row" id="nameRow">
+        <div class="form-group">
+          <label id="lblLastName">Фамилия *</label>
+          <input type="text" id="lastName" placeholder="Иванов">
         </div>
+        <div class="form-group">
+          <label id="lblFirstName">Имя *</label>
+          <input type="text" id="firstName" placeholder="Иван">
+        </div>
+      </div>
 
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Посада</label>
-          <select id="reqPosition" class="w-full px-3 py-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700">
-            <option value="Комплектувальник">Комплектувальник</option>
-            <option value="Вантажник">Вантажник</option>
-          </select>
-        </div>
+      <!-- Номер телефона -->
+      <div class="form-group" id="phoneGroup">
+        <label id="lblPhone">Номер телефона *</label>
+        <input type="tel" id="phone" placeholder="+380000000000">
+      </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <div>
-            <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Дата виходу</label>
-            <input type="date" id="reqDate" required class="w-full px-3 py-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Гендерний розподіл</label>
-            <select id="reqGender" class="w-full px-3 py-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700">
-              <option value="Без обмежень">Без обмежень</option>
-              <option value="Чоловіки">Тільки чоловіки</option>
-              <option value="Жінки">Тільки жінки</option>
-            </select>
-          </div>
-        </div>
+      <!-- Пароль -->
+      <div class="form-group">
+        <label id="lblPassword">Пароль *</label>
+        <input type="password" id="password" placeholder="•••••" required>
+      </div>
 
-        <div class="grid grid-cols-3 gap-3">
-          <div>
-            <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Кількість людей</label>
-            <input type="number" id="reqCount" min="1" value="3" required class="w-full px-3 py-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Час початку</label>
-            <input type="time" id="reqTimeStart" value="08:00" required class="w-full px-3 py-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Час закінчення</label>
-            <input type="time" id="reqTimeEnd" value="17:00" required class="w-full px-3 py-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700">
-          </div>
-        </div>
-
-        <div>
-          <label class="block text-xs font-semibold uppercase text-slate-600 dark:text-slate-400 mb-1">Коментар для менеджера</label>
-          <textarea id="reqComment" rows="2" placeholder="Особливі побажання..." class="w-full px-3 py-2.5 border rounded-lg dark:bg-slate-800 dark:border-slate-700"></textarea>
-        </div>
-
-        <div class="flex justify-end space-x-3 pt-2">
-          <button type="button" onclick="closeCreateRequestModal()" class="px-4 py-2 border rounded-lg text-slate-600 dark:text-slate-300">Скасувати</button>
-          <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg shadow">Відправити менеджеру</button>
-        </div>
-      </form>
-    </div>
+      <!-- Кнопка -->
+      <button type="submit" class="btn-submit" id="btnSubmit">Зарегистрироваться</button>
+    </form>
   </div>
 
-
-  <!-- ================= MANAGER SCREEN (Менеджер) ================= -->
-  <main id="managerScreen" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 hidden">
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6">
-      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Кабинет Менеджера</h2>
-      <p class="text-sm text-slate-500 dark:text-slate-400">Обробка заявок, підбір персоналу та контроль білого списку аутсорса.</p>
-    </div>
-
-    <!-- Вкладки менеджера -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Входящие заявки от клиентов -->
-      <div class="lg:col-span-2 space-y-4">
-        <h3 class="font-bold text-slate-900 dark:text-white">Вхідні заявки від клієнтів</h3>
-        <div id="managerRequestsList" class="space-y-4">
-          <!-- Динамически заполняется -->
-        </div>
-      </div>
-
-      <!-- Белый список аутсорса -->
-      <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm h-fit">
-        <h3 class="font-bold text-slate-900 dark:text-white mb-3 text-sm">Білий список Аутсорса</h3>
-        <div id="accessListDisplay" class="text-xs text-slate-600 dark:text-slate-300 space-y-2 mb-4 max-h-60 overflow-y-auto custom-scrollbar"></div>
-        <div class="space-y-2">
-          <input type="text" id="addAccName" placeholder="ПІБ виконавця" class="w-full px-3 py-2 border rounded text-xs dark:bg-slate-800 dark:border-slate-700">
-          <input type="text" id="addAccPhone" placeholder="Телефон (+380...)" class="w-full px-3 py-2 border rounded text-xs dark:bg-slate-800 dark:border-slate-700">
-          <button onclick="addOutsourceToList()" class="w-full py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-semibold transition">Додати в список</button>
-        </div>
-      </div>
-    </div>
-  </main>
-
-
-  <!-- ================= ADMIN SCREEN (Администратор) ================= -->
-  <main id="adminScreen" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-16 flex flex-col items-center justify-center hidden">
-    <div class="bg-white dark:bg-slate-900 p-12 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm text-center max-w-md w-full">
-      <h2 class="text-xl font-bold text-slate-800 dark:text-white">Кабинет Администратора</h2>
-      <p class="text-sm text-slate-500 mt-2">Системный мониторинг и настройки безопасности.</p>
-    </div>
-  </main>
-
-
-  <!-- ================= OUTSOURCE SCREEN (Исполнитель) ================= -->
-  <main id="outsourceScreen" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 hidden">
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6">
-      <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-2">Кабинет Исполнителя (Аутсорс)</h2>
-      <p class="text-sm text-slate-500 dark:text-slate-400">Перегляд доступних відкритих змін та ваші заплановані виходи.</p>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Доступные открытые смены -->
-      <div class="space-y-4">
-        <h3 class="font-bold text-slate-900 dark:text-white">Відкриті зміни (Доступна робота)</h3>
-        <div id="outsourceOpenShiftsList" class="space-y-3">
-          <!-- Заполняется динамически -->
-        </div>
-      </div>
-
-      <!-- Мои запланированные выходы -->
-      <div class="space-y-4">
-        <h3 class="font-bold text-slate-900 dark:text-white">Мої заплановані виходи</h3>
-        <div id="outsourceScheduledList" class="space-y-3">
-          <!-- Заполняется динамически -->
-        </div>
-      </div>
-    </div>
-  </main>
-
-
-  <!-- JavaScript: Логика взаимодействия пазла -->
   <script>
-    // Хранилище данных приложения
-    let outsourceAccessList = JSON.parse(localStorage.getItem('outsourceList')) || [
-      { name: "Кирилл Лупан", phone: "0000000003" },
-      { name: "Иванна Грибанова", phone: "0000000004" }
-    ];
-
-    // Единый список заявок в системе
-    let requestsDB = JSON.parse(localStorage.getItem('requestsDB')) || [
-      {
-        id: 101,
-        clientName: "Магазин «Ткані України»",
-        location: "Мурманська склад тканин",
-        position: "Комплектувальник",
-        date: "2026-10-02",
-        time: "08:00 - 17:00",
-        gender: "Без обмежень",
-        count: 3,
-        comment: "Термінове відвантаження рулонів.",
-        status: "new", // new, in_work, clarification, confirmed
-        managerQuestion: "",
-        clientAnswer: "",
-        assignedWorkers: []
+    // --- Локализация ---
+    const translations = {
+      ru: {
+        title: "Авторизация",
+        subtitle: "Управление заявками и персоналом склада",
+        login: "Вход",
+        register: "Регистрация",
+        role: "Роль при регистрации",
+        admin: "Администратор",
+        manager: "Менеджер",
+        warehouse: "Выберите свой склад *",
+        selectWarehouse: "-- Выберите склад --",
+        code: "Код доступа (для Менеджера/Админа) *",
+        lastName: "Фамилия *",
+        firstName: "Имя *",
+        phone: "Номер телефона *",
+        password: "Пароль *",
+        btnRegister: "Зарегистрироваться",
+        btnLogin: "Войти",
+        errWarehouseRequired: "Пожалуйста, выберите склад!",
+        errInvalidCode: "Введен неверный код доступа!",
+        themeDark: "🌙 Тёмная",
+        themeLight: "☀️ Светлая",
+        successReg: "Регистрация успешно пройдена!"
+      },
+      uk: {
+        title: "Авторизація",
+        subtitle: "Управління заявками та персоналом складу",
+        login: "Вхід",
+        register: "Реєстрація",
+        role: "Роль при реєстрації",
+        admin: "Адміністратор",
+        manager: "Менеджер",
+        warehouse: "Оберіть свій склад *",
+        selectWarehouse: "-- Оберіть склад --",
+        code: "Код доступу (для Менеджера/Адміна) *",
+        lastName: "Прізвище *",
+        firstName: "Ім'я *",
+        phone: "Номер телефону *",
+        password: "Пароль *",
+        btnRegister: "Зареєструватися",
+        btnLogin: "Увійти",
+        errWarehouseRequired: "Будь ласка, оберіть склад!",
+        errInvalidCode: "Введено невірний код доступу!",
+        themeDark: "🌙 Темна",
+        themeLight: "☀️ Світла",
+        successReg: "Реєстрацію успішно пройдено!"
+      },
+      en: {
+        title: "Authorization",
+        subtitle: "Warehouse management system",
+        login: "Sign In",
+        register: "Register",
+        role: "Registration Role",
+        admin: "Administrator",
+        manager: "Manager",
+        warehouse: "Select your warehouse *",
+        selectWarehouse: "-- Select warehouse --",
+        code: "Access Code (Manager/Admin) *",
+        lastName: "Last Name *",
+        firstName: "First Name *",
+        phone: "Phone Number *",
+        password: "Password *",
+        btnRegister: "Register",
+        btnLogin: "Sign In",
+        errWarehouseRequired: "Please select a warehouse!",
+        errInvalidCode: "Invalid access code!",
+        themeDark: "🌙 Dark",
+        themeLight: "☀️ Light",
+        successReg: "Registration successful!"
       }
-    ];
+    };
 
-    let currentUser = { role: 'manager', name: 'Антоний Ганчин', phone: '+380671354296' };
+    let currentLang = 'ru';
+    let currentMode = 'register';
 
-    function saveDB() {
-      localStorage.setItem('requestsDB', JSON.stringify(requestsDB));
-      localStorage.setItem('outsourceList', JSON.stringify(outsourceAccessList));
-    }
+    // --- Валидация кодов доступа ---
+    const VALID_CODES = {
+      manager: "111",
+      admin: {
+        oil: "221",
+        erc: "222",
+        murmansk: "223"
+      }
+    };
 
-    function toggleTheme() {
-      document.documentElement.classList.toggle('dark');
-    }
-
-    function setAuthMode(mode) {
-      const isLogin = mode === 'login';
-      document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
-      document.getElementById('registerForm').classList.toggle('hidden', isLogin);
-      document.getElementById('btnAuthLogin').className = isLogin ? 'flex-1 py-2 rounded-lg text-center transition-all bg-white dark:bg-slate-700 text-indigo-600 shadow-sm font-semibold' : 'flex-1 py-2 rounded-lg text-center transition-all text-slate-400';
-      document.getElementById('btnAuthRegister').className = !isLogin ? 'flex-1 py-2 rounded-lg text-center transition-all bg-white dark:bg-slate-700 text-indigo-600 shadow-sm font-semibold' : 'flex-1 py-2 rounded-lg text-center transition-all text-slate-400';
-      document.getElementById('authErrorMsg').classList.add('hidden');
-    }
-
-    function toggleRegFields() {
-      const role = document.getElementById('regRole').value;
-      const accessCodeContainer = document.getElementById('accessCodeContainer');
-      const outsourceNotice = document.getElementById('outsourceNotice');
-
-      if (role === 'outsource') {
-        accessCodeContainer.classList.add('hidden');
-        outsourceNotice.classList.remove('hidden');
+    function handleRoleChange() {
+      const role = document.getElementById('roleSelect').value;
+      const warehouseGroup = document.getElementById('warehouseGroup');
+      const warehouseSelect = document.getElementById('warehouseSelect');
+      
+      if (role === 'admin') {
+        warehouseGroup.style.display = 'block';
+        warehouseSelect.required = true;
       } else {
-        accessCodeContainer.classList.remove('hidden');
-        outsourceNotice.classList.add('hidden');
+        warehouseGroup.style.display = 'none';
+        warehouseSelect.required = false;
+        warehouseSelect.value = "";
       }
     }
 
-    function handleLogin(e) {
-      e.preventDefault();
-      const role = document.getElementById('loginRole').value;
-      const phone = document.getElementById('loginPhone').value;
-      currentUser = { role, name: role === 'manager' ? 'Антоний Ганчин' : (role === 'client' ? 'Замовник ТОВ' : 'Кирилл Лупан'), phone };
-      showCabinet(role, currentUser.name);
+    function switchTab(mode) {
+      currentMode = mode;
+      document.getElementById('tabLogin').classList.toggle('active', mode === 'login');
+      document.getElementById('tabRegister').classList.toggle('active', mode === 'register');
+      
+      const isReg = mode === 'register';
+      document.getElementById('nameRow').style.display = isReg ? 'flex' : 'none';
+      document.getElementById('phoneGroup').style.display = isReg ? 'block' : 'none';
+      
+      handleRoleChange();
+      
+      const lang = translations[currentLang];
+      document.getElementById('btnSubmit').innerText = isReg ? lang.btnRegister : lang.btnLogin;
+      hideError();
     }
 
-    function handleRegister(e) {
+    function handleSubmit(e) {
       e.preventDefault();
-      const role = document.getElementById('regRole').value;
-      const code = document.getElementById('regAccessCode').value.trim();
-      const phone = document.getElementById('regPhone').value.trim();
-      const lastName = document.getElementById('regLastName').value.trim();
-      const firstName = document.getElementById('regFirstName').value.trim();
-      const errBox = document.getElementById('authErrorMsg');
-      errBox.classList.add('hidden');
+      hideError();
 
-      if (role === 'manager' && code !== '111') {
-        errBox.textContent = 'Невірний код для Менеджера (потрібно 111)';
-        errBox.classList.remove('hidden');
-        return;
-      }
-      if (role === 'admin' && code !== '222') {
-        errBox.textContent = 'Невірний код для Адміністратора (потрібно 222)';
-        errBox.classList.remove('hidden');
-        return;
-      }
-      if (role === 'outsource') {
-        const found = outsourceAccessList.find(item => item.phone.replace(/\D/g, '') === phone.replace(/\D/g, ''));
-        if (!found) {
-          errBox.textContent = 'Помилка: Ваш номер відсутній у білому списку менеджера!';
-          errBox.classList.remove('hidden');
+      const role = document.getElementById('roleSelect').value;
+      const warehouse = document.getElementById('warehouseSelect').value;
+      const code = document.getElementById('accessCode').value.trim();
+      const lang = translations[currentLang];
+
+      if (currentMode === 'register') {
+        // Проверка заполнения склада для админа
+        if (role === 'admin' && !warehouse) {
+          showError(lang.errWarehouseRequired);
+          return;
+        }
+
+        // Проверка кодов доступа
+        let isValid = false;
+        if (role === 'manager' && code === VALID_CODES.manager) {
+          isValid = true;
+        } else if (role === 'admin' && VALID_CODES.admin[warehouse] === code) {
+          isValid = true;
+        }
+
+        if (!isValid) {
+          showError(lang.errInvalidCode);
           return;
         }
       }
 
-      currentUser = { role, name: `${lastName} ${firstName}`, phone };
-      showCabinet(role, currentUser.name);
+      alert(lang.successReg);
     }
 
-    function showCabinet(role, userName) {
-      document.getElementById('authScreen').classList.add('hidden');
-      document.getElementById('appHeader').classList.remove('hidden');
-      document.getElementById('clientScreen').classList.add('hidden');
-      document.getElementById('managerScreen').classList.add('hidden');
-      document.getElementById('adminScreen').classList.add('hidden');
-      document.getElementById('outsourceScreen').classList.add('hidden');
-
-      document.getElementById('headerUserName').textContent = userName;
-
-      if (role === 'client') {
-        document.getElementById('headerRoleBadge').textContent = 'Роль: Замовник';
-        document.getElementById('clientScreen').classList.remove('hidden');
-        renderClientRequests();
-      } else if (role === 'manager') {
-        document.getElementById('headerRoleBadge').textContent = 'Роль: Менеджер';
-        document.getElementById('managerScreen').classList.remove('hidden');
-        renderManagerRequests();
-        renderAccessList();
-      } else if (role === 'admin') {
-        document.getElementById('headerRoleBadge').textContent = 'Роль: Адміністратор';
-        document.getElementById('adminScreen').classList.remove('hidden');
-      } else if (role === 'outsource') {
-        document.getElementById('headerRoleBadge').textContent = 'Роль: Виконавець (Аутсорс)';
-        document.getElementById('outsourceScreen').classList.remove('hidden');
-        renderOutsourceScreens();
-      }
+    function showError(msg) {
+      const errBox = document.getElementById('errorBox');
+      errBox.innerText = msg;
+      errBox.style.display = 'block';
     }
 
-    function logout() {
-      document.getElementById('appHeader').classList.add('hidden');
-      document.querySelectorAll('main').forEach(el => el.classList.add('hidden'));
-      document.getElementById('authScreen').classList.remove('hidden');
+    function hideError() {
+      document.getElementById('errorBox').style.display = 'none';
     }
 
-    // --- КЛИЕНТ: Создание и управление заявками ---
-    function openCreateRequestModal() {
-      document.getElementById('createRequestModal').classList.remove('hidden');
-    }
-    function closeCreateRequestModal() {
-      document.getElementById('createRequestModal').classList.add('hidden');
-    }
+    // --- Переключение языков ---
+    function changeLanguage(langKey) {
+      currentLang = langKey;
+      const lang = translations[langKey];
 
-    function submitClientRequest(e) {
-      e.preventDefault();
-      const newReq = {
-        id: Date.now().toString().slice(-4),
-        clientName: currentUser.name,
-        location: document.getElementById('reqLocation').value,
-        position: document.getElementById('reqPosition').value,
-        date: document.getElementById('reqDate').value,
-        time: `${document.getElementById('reqTimeStart').value} - ${document.getElementById('reqTimeEnd').value}`,
-        gender: document.getElementById('reqGender').value,
-        count: parseInt(document.getElementById('reqCount').value),
-        comment: document.getElementById('reqComment').value,
-        status: 'new',
-        managerQuestion: '',
-        clientAnswer: '',
-        assignedWorkers: []
-      };
+      document.getElementById('title').innerText = lang.title;
+      document.getElementById('subtitle').innerText = lang.subtitle;
+      document.getElementById('tabLogin').innerText = lang.login;
+      document.getElementById('tabRegister').innerText = lang.register;
+      document.getElementById('lblRole').innerText = lang.role;
+      document.getElementById('lblWarehouse').innerText = lang.warehouse;
+      document.getElementById('warehouseSelect').options[0].text = lang.selectWarehouse;
+      document.getElementById('lblCode').innerText = lang.code;
+      document.getElementById('lblLastName').innerText = lang.lastName;
+      document.getElementById('lblFirstName').innerText = lang.firstName;
+      document.getElementById('lblPhone').innerText = lang.phone;
+      document.getElementById('lblPassword').innerText = lang.password;
+      document.getElementById('btnSubmit').innerText = currentMode === 'register' ? lang.btnRegister : lang.btnLogin;
 
-      requestsDB.push(newReq);
-      saveDB();
-      closeCreateRequestModal();
-      renderClientRequests();
-      alert(`Заявку №${newReq.id} успішно передано менеджеру в роботу!`);
+      const themeBtn = document.getElementById('themeBtn');
+      const isDark = document.body.getAttribute('data-theme') === 'dark';
+      themeBtn.innerText = isDark ? lang.themeLight : lang.themeDark;
     }
 
-    function renderClientRequests() {
-      const container = document.getElementById('clientRequestsList');
-      if (requestsDB.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 text-sm italic">У вас поки немає створених заявок.</p>';
-        return;
-      }
-
-      container.innerHTML = requestsDB.map(req => `
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400">Заявка №${req.id}</span>
-              <h4 class="font-bold text-slate-900 dark:text-white text-base">${req.location} (${req.position})</h4>
-            </div>
-            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusBadge(req.status)}">${getStatusText(req.status)}</span>
-          </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">📅 Дата: <strong>${req.date}</strong> | Час: <strong>${req.time}</strong> | Кількість: <strong>${req.count}</strong> (${req.gender})</p>
-          ${req.comment ? `<p class="text-xs text-slate-600 dark:text-slate-300 italic mb-2">💬 Коментар: ${req.comment}</p>` : ''}
-          
-          ${req.managerQuestion ? `
-            <div class="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg text-xs">
-              <strong class="text-amber-800 dark:text-amber-300">Питання менеджера:</strong> ${req.managerQuestion}
-              <div class="mt-2 flex gap-2">
-                <input type="text" id="ans_${req.id}" placeholder="Ваша відповідь..." class="px-2.5 py-1 border rounded text-xs flex-1 dark:bg-slate-800 dark:border-slate-700">
-                <button onclick="sendClientAnswer('${req.id}')" class="px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded font-medium">Відповісти</button>
-              </div>
-            </div>
-          ` : ''}
-
-          ${req.clientAnswer ? `<p class="text-xs text-emerald-600 dark:text-emerald-400 mt-2">✓ Ваша відповідь на уточнення: ${req.clientAnswer}</p>` : ''}
-        </div>
-      `).join('');
-    }
-
-    function sendClientAnswer(reqId) {
-      const text = document.getElementById(`ans_${reqId}`).value.trim();
-      if (!text) return;
-      const req = requestsDB.find(r => r.id == reqId);
-      if (req) {
-        req.clientAnswer = text;
-        req.status = 'clarification_received';
-        saveDB();
-        renderClientRequests();
-        alert('Відповідь надіслано менеджеру!');
-      }
-    }
-
-
-    // --- МЕНЕДЖЕР: Обработка заявок и белый список ---
-    function renderManagerRequests() {
-      const container = document.getElementById('managerRequestsList');
-      if (requestsDB.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 text-sm italic">Немає вхідних заявок.</p>';
-        return;
-      }
-
-      container.innerHTML = requestsDB.map(req => `
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <span class="text-xs font-bold text-indigo-600">Заявка №${req.id} від ${req.clientName}</span>
-              <h4 class="font-bold text-slate-900 dark:text-white text-base">${req.location} — ${req.position}</h4>
-            </div>
-            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusBadge(req.status)}">${getStatusText(req.status)}</span>
-          </div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-3">📅 ${req.date} | ⏰ ${req.time} | 👥 ${req.count} чол. (${req.gender})</p>
-          
-          ${req.clientAnswer ? `<p class="text-xs text-emerald-600 dark:text-emerald-400 mb-3"><strong>Відповідь клієнта:</strong> ${req.clientAnswer}</p>` : ''}
-
-          <div class="flex flex-wrap gap-2 pt-2 border-t dark:border-slate-800">
-            ${req.status === 'new' ? `<button onclick="managerTakeInWork('${req.id}')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-semibold">🛠 Взяти в роботу</button>` : ''}
-            <button onclick="managerAskClarification('${req.id}')" class="px-3 py-1.5 bg-amber-600/20 hover:bg-amber-600 text-amber-700 dark:text-amber-300 hover:text-white rounded text-xs font-semibold border border-amber-500/30">❓ Потрібне уточнення</button>
-            <button onclick="managerPublishOpen('${req.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-semibold">📢 Опублікувати відкриту зміну</button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function managerTakeInWork(reqId) {
-      const req = requestsDB.find(r => r.id == reqId);
-      if (req) {
-        req.status = 'in_work';
-        saveDB();
-        renderManagerRequests();
-      }
-    }
-
-    function managerAskClarification(reqId) {
-      const q = prompt("Введіть запитання / уточнення для клієнта:");
-      if (!q) return;
-      const req = requestsDB.find(r => r.id == reqId);
-      if (req) {
-        req.managerQuestion = q;
-        req.status = 'clarification';
-        saveDB();
-        renderManagerRequests();
-        alert('Запитання надіслано клієнту!');
-      }
-    }
-
-    function managerPublishOpen(reqId) {
-      const req = requestsDB.find(r => r.id == reqId);
-      if (req) {
-        req.status = 'published';
-        saveDB();
-        alert(`Зміну №${req.id} (${req.location}) успішно опубліковано для виконавців!`);
-      }
-    }
-
-    function renderAccessList() {
-      const container = document.getElementById('accessListDisplay');
-      if (outsourceAccessList.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 italic text-xs">Список порожній</p>';
-        return;
-      }
-      container.innerHTML = outsourceAccessList.map((item, index) => `
-        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/60 p-2 rounded border border-slate-200 dark:border-slate-700">
-          <span><strong>${item.name}</strong> (${item.phone})</span>
-          <button onclick="removeOutsource(${index})" class="text-rose-500 hover:text-rose-700 text-xs"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      `).join('');
-    }
-
-    function addOutsourceToList() {
-      const name = document.getElementById('addAccName').value.trim();
-      const phone = document.getElementById('addAccPhone').value.trim();
-      if (!name || !phone) return alert('Заповніть ПІБ та телефон!');
-      outsourceAccessList.push({ name, phone });
-      saveDB();
-      renderAccessList();
-      document.getElementById('addAccName').value = '';
-      document.getElementById('addAccPhone').value = '';
-    }
-
-    function removeOutsource(index) {
-      outsourceAccessList.splice(index, 1);
-      saveDB();
-      renderAccessList();
-    }
-
-
-    // --- ИСПОЛНИТЕЛЬ (Аутсорс): Поиск работы и запланированные выходы ---
-    function renderOutsourceScreens() {
-      const openContainer = document.getElementById('outsourceOpenShiftsList');
-      const publishedReqs = requestsDB.filter(r => r.status === 'published');
-
-      if (publishedReqs.length === 0) {
-        openContainer.innerHTML = '<p class="text-slate-400 text-sm italic">Наразі немає відкритих змін для відгуку.</p>';
-      } else {
-        openContainer.innerHTML = publishedReqs.map(req => `
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <h4 class="font-bold text-sm text-slate-900 dark:text-white">${req.location}</h4>
-            <p class="text-xs text-slate-500 mt-1">Посада: <strong>${req.position}</strong> | Дата: <strong>${req.date}</strong> (${req.time})</p>
-            <button onclick="outsourceApply('${req.id}')" class="mt-3 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold">Відгукнутися на зміну</button>
-          </div>
-        `).join('');
-      }
-
-      // Запланированные выходы
-      const schedContainer = document.getElementById('outsourceScheduledList');
-      const assignedReqs = requestsDB.filter(r => r.assignedWorkers && r.assignedWorkers.includes(currentUser.name));
+    // --- Переключение темы ---
+    function toggleTheme() {
+      const body = document.body;
+      const themeBtn = document.getElementById('themeBtn');
+      const isDark = body.getAttribute('data-theme') === 'dark';
       
-      if (assignedReqs.length === 0) {
-        schedContainer.innerHTML = '<p class="text-slate-400 text-sm italic">У вас поки немає підтверджених виходів.</p>';
+      if (isDark) {
+        body.removeAttribute('data-theme');
+        themeBtn.innerText = translations[currentLang].themeDark;
       } else {
-        schedContainer.innerHTML = assignedReqs.map(req => `
-          <div class="bg-white dark:bg-slate-900 p-4 rounded-xl border border-emerald-500/30 shadow-sm">
-            <span class="px-2 py-0.5 bg-emerald-500/10 text-emerald-600 rounded text-xs font-bold">Вихід підтверджено</span>
-            <h4 class="font-bold text-sm text-slate-900 dark:text-white mt-2">${req.location}</h4>
-            <p class="text-xs text-slate-500 mt-1">📅 ${req.date} | ⏰ ${req.time} | 📞 Старший: +380670000001</p>
-          </div>
-        `).join('');
+        body.setAttribute('data-theme', 'dark');
+        themeBtn.innerText = translations[currentLang].themeLight;
       }
     }
 
-    function outsourceApply(reqId) {
-      const req = requestsDB.find(r => r.id == reqId);
-      if (req) {
-        if (!req.assignedWorkers) req.assignedWorkers = [];
-        if (!req.assignedWorkers.includes(currentUser.name)) {
-          req.assignedWorkers.push(currentUser.name);
-          saveDB();
-          renderOutsourceScreens();
-          alert('Ваш відгук надіслано менеджеру! Статус: Очікує рішення.');
-        } else {
-          alert('Ви вже відгукнулися на цю зміну.');
-        }
-      }
-    }
-
-
-    // --- Утилиты статусов ---
-    function getStatusText(status) {
-      switch(status) {
-        case 'new': return 'Нова заявка';
-        case 'in_work': return 'У роботі';
-        case 'clarification': return 'Потрібне уточнення';
-        case 'clarification_received': return 'Уточнення отримано';
-        case 'published': return 'Відкрита зміна';
-        case 'closed': return 'Закрито';
-        default: return status;
-      }
-    }
-
-    function getStatusBadge(status) {
-      switch(status) {
-        case 'new': return 'bg-blue-500/10 text-blue-600 border border-blue-500/20';
-        case 'in_work': return 'bg-indigo-500/10 text-indigo-600 border border-indigo-500/20';
-        case 'clarification': return 'bg-amber-500/10 text-amber-600 border border-amber-500/20';
-        case 'clarification_received': return 'bg-teal-500/10 text-teal-600 border border-teal-500/20';
-        case 'published': return 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20';
-        default: return 'bg-slate-500/10 text-slate-600';
-      }
-    }
+    // Инициализация
+    handleRoleChange();
   </script>
 </body>
 </html>
