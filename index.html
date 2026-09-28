@@ -146,7 +146,6 @@
 
   <!-- ================= ADMIN SCREEN ================= -->
   <main id="adminScreen" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 hidden">
-    <!-- Уведомление для Админа от менеджера -->
     <div id="adminNotificationsList" class="space-y-2 mb-4"></div>
 
     <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -248,20 +247,24 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Входящие заявки -->
       <div class="lg:col-span-2 space-y-4">
         <h3 class="font-bold text-slate-900 dark:text-white" data-i18n="incomingRequestsTitle">Вхідні заявки від адміністраторів</h3>
         <div id="managerRequestsList" class="space-y-4"></div>
       </div>
 
-      <!-- Переключатель списков: Белый / Черный -->
+      <!-- Вкладки Доступа: Белый список / Чорный список -->
       <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm h-fit">
-        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg mb-4 text-xs font-semibold">
+        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-lg mb-3 text-xs font-semibold">
           <button id="btnTabWhite" onclick="switchAccessTab('white')" class="flex-1 py-1.5 rounded-md text-center bg-white dark:bg-slate-700 text-indigo-600 shadow-sm">⚪ Білий список</button>
           <button id="btnTabBlack" onclick="switchAccessTab('black')" class="flex-1 py-1.5 rounded-md text-center text-slate-500 hover:text-slate-800 dark:hover:text-white">⚫ Чорний список</button>
         </div>
 
-        <!-- Контейнер белого списка -->
+        <!-- Поисковая строка -->
+        <div class="mb-3">
+          <input type="text" id="accessSearchInput" oninput="handleSearchAccessList()" placeholder="🔍 Пошук за ПІБ або номером..." class="w-full px-3 py-1.5 border rounded-lg text-xs dark:bg-slate-800 dark:border-slate-700">
+        </div>
+
+        <!-- Белый список -->
         <div id="whiteListSection">
           <div id="whiteListDisplay" class="text-xs text-slate-600 dark:text-slate-300 space-y-2 mb-4 max-h-64 overflow-y-auto custom-scrollbar"></div>
           <div class="space-y-2 border-t dark:border-slate-800 pt-3">
@@ -271,7 +274,7 @@
           </div>
         </div>
 
-        <!-- Контейнер черного списка -->
+        <!-- Черный список -->
         <div id="blackListSection" class="hidden">
           <div id="blackListDisplay" class="text-xs text-slate-600 dark:text-slate-300 space-y-2 max-h-80 overflow-y-auto custom-scrollbar"></div>
         </div>
@@ -280,13 +283,13 @@
   </main>
 
 
-  <!-- MODAL: Блокировка (Бан) на склады -->
+  <!-- MODAL: Обмеження доступу (Бан на склады / Полный бан) -->
   <div id="banModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-md w-full p-6 shadow-2xl">
-      <h3 class="font-bold text-base text-slate-900 dark:text-white mb-2">🚫 Блокування виконавця</h3>
+      <h3 class="font-bold text-base text-slate-900 dark:text-white mb-2">🚫 Обмеження доступу аутсорс</h3>
       <p id="banUserName" class="text-xs text-slate-500 mb-4"></p>
       
-      <p class="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">Оберіть склади для бан-листа:</p>
+      <p class="text-xs font-semibold text-slate-700 dark:text-slate-300 mb-2">Оберіть склади для блокування:</p>
       <div class="space-y-2 text-xs mb-4">
         <label class="flex items-center space-x-2"><input type="checkbox" value="Oil склад" class="ban-wh-check"> <span>Oil склад</span></label>
         <label class="flex items-center space-x-2"><input type="checkbox" value="ЕРЦ склад" class="ban-wh-check"> <span>ЕРЦ склад</span></label>
@@ -295,17 +298,17 @@
       </div>
 
       <div class="flex items-center justify-between gap-2 pt-2 border-t dark:border-slate-800">
-        <button onclick="banSelectAll()" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 rounded text-xs font-semibold">Усі склади</button>
+        <button onclick="banSelectAll()" class="px-3 py-1.5 bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300 rounded text-xs font-bold">Усі склади (Повний бан)</button>
         <div class="flex gap-2">
           <button onclick="closeBanModal()" class="px-3 py-1.5 border rounded text-xs">Скасувати</button>
-          <button onclick="confirmBanSubmit()" class="px-4 py-1.5 bg-rose-600 text-white rounded text-xs font-semibold">Заблокувати</button>
+          <button onclick="confirmBanSubmit()" class="px-4 py-1.5 bg-rose-600 text-white rounded text-xs font-semibold">Зберегти обмеження</button>
         </div>
       </div>
     </div>
   </div>
 
 
-  <!-- MODAL: Внести коррективы (Резерв на дату) -->
+  <!-- MODAL: Внести коррективы (Резерв + Корректировка количества) -->
   <div id="editReserveModal" class="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 shadow-2xl">
       <div class="flex justify-between items-center mb-3">
@@ -315,24 +318,30 @@
 
       <p id="editReqInfo" class="text-xs text-indigo-600 font-semibold mb-3"></p>
 
-      <!-- Шаг 1: Количество людей и кнопка списка резерва -->
+      <!-- Шаг 1 -->
       <div id="reserveStep1" class="space-y-4 text-xs">
         <div class="bg-indigo-50 dark:bg-indigo-950/30 p-3 rounded-lg border border-indigo-200 dark:border-indigo-800">
           <span class="text-slate-600 dark:text-slate-400">Доступний резерв на цю дату:</span>
           <button onclick="openReserveListStep2()" class="ml-2 font-bold text-indigo-600 dark:text-indigo-400 underline text-sm" id="reserveCountBadge">0 людей (Натисніть для перегляду)</button>
         </div>
 
+        <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg space-y-1">
+          <p class="font-semibold text-slate-700 dark:text-slate-300">Поточний стан резерву:</p>
+          <p id="currentReservedText" class="text-slate-500">Заброньовано з резерву: 0 чол.</p>
+        </div>
+
+        <!-- Поле изменения количества нужного аутсорса -->
         <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-          <p class="font-semibold text-slate-700 dark:text-slate-300 mb-1">Поточний стан заброньованих з резерву:</p>
-          <p id="currentReservedText" class="text-slate-500">Заброньовано: 0 чол.</p>
+          <label class="block font-semibold text-slate-700 dark:text-slate-300 mb-1">Змінити кількість потрібного аутсорса:</label>
+          <input type="number" id="editOutsourceNeededInput" min="0" class="w-full px-3 py-2 border rounded dark:bg-slate-800 dark:border-slate-700 font-bold">
         </div>
 
         <div class="flex justify-end gap-2 pt-2 border-t dark:border-slate-800">
-          <button onclick="closeEditReserveModal()" class="px-4 py-2 border rounded text-xs">Готово</button>
+          <button onclick="saveOutsourceCountChange()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded text-xs">Зберегти зміни</button>
         </div>
       </div>
 
-      <!-- Шаг 2: Список кандидатов в резерве -->
+      <!-- Шаг 2: Выбор людей -->
       <div id="reserveStep2" class="space-y-3 text-xs hidden">
         <p class="font-semibold text-slate-700 dark:text-slate-300">Оберіть людей з резерву для підтвердження броні:</p>
         <div id="reservePeopleList" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar"></div>
@@ -530,7 +539,6 @@
       }
     };
 
-    // БЕЛЫЙ И ЧЕРНЫЙ СПИСКИ
     let outsourceAccessList = JSON.parse(localStorage.getItem('outsourceList')) || [
       { name: "Кирилл Лупан", phone: "0000000003" },
       { name: "Иванна Грибанова", phone: "0000000004" },
@@ -539,14 +547,12 @@
 
     let outsourceBlackList = JSON.parse(localStorage.getItem('outsourceBlackList')) || [];
 
-    // Резерв людей
     let globalReserve = JSON.parse(localStorage.getItem('globalReserve')) || [
       { name: "Сергій Петренко", phone: "0971112233" },
       { name: "Максим Бондар", phone: "0504445566" },
       { name: "Андрій Сидоренко", phone: "0637778899" }
     ];
 
-    // Уведомления для Админов
     let adminNotifications = JSON.parse(localStorage.getItem('adminNotifications')) || [];
 
     let requestsDB = JSON.parse(localStorage.getItem('requestsDB')) || [
@@ -574,6 +580,7 @@
     let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
     let selectedBanUserIndex = null;
     let activeEditReqId = null;
+    let currentAccessTab = 'white';
 
     function saveDB() {
       localStorage.setItem('requestsDB', JSON.stringify(requestsDB));
@@ -641,6 +648,18 @@
       const errBox = document.getElementById('authErrorMsg');
       errBox.classList.add('hidden');
 
+      const cleanPhone = phone.replace(/\D/g, '');
+
+      // Проверка на полное занесение в ЧЕРНЫЙ СПИСОК
+      if (role === 'outsource') {
+        const isFullBanned = outsourceBlackList.find(b => b.phone.replace(/\D/g, '') === cleanPhone && b.isFullBan);
+        if (isFullBanned) {
+          errBox.textContent = 'Доступ заблоковано! Ви перебуваєте у чорному списку.';
+          errBox.classList.remove('hidden');
+          return;
+        }
+      }
+
       if (currentAuthMode === 'register') {
         if (role === 'admin') {
           if (VALID_CODES.admin[warehouse] !== code) {
@@ -655,7 +674,6 @@
             return;
           }
         } else if (role === 'outsource') {
-          const cleanPhone = phone.replace(/\D/g, '');
           const found = outsourceAccessList.find(item => item.phone.replace(/\D/g, '') === cleanPhone);
           if (!found) {
             errBox.textContent = 'Помилка: Ваш номер телефону відсутній у білому списку менеджера!';
@@ -749,7 +767,7 @@
 
     function submitClientRequest(e) {
       e.preventDefault();
-      const countVal = parseInt(document.getElementById('reqCount').value);
+      const countVal = parseInt(document.getElementById('reqCount').value) || 1;
       const newReq = {
         id: Math.floor(1000 + Math.random() * 9000).toString(),
         clientName: currentUser.name,
@@ -783,29 +801,33 @@
         container.innerHTML = '<p class="text-slate-400 text-sm italic">Немає створених заявок.</p>';
         return;
       }
-      container.innerHTML = requestsDB.map(req => `
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <span class="text-xs font-bold text-indigo-600">Заявка №${req.id}</span>
-              <h4 class="font-bold text-slate-900 dark:text-white text-base">${req.location} (${req.position})</h4>
-            </div>
-            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusBadge(req.status)}">${getStatusText(req.status)}</span>
-          </div>
-          <p class="text-xs text-slate-500 mb-2">📅 Дата: <strong>${req.date}</strong> | Час: <strong>${req.time}</strong> | Потреба: <strong>${req.totalCount} чол.</strong> (${req.gender}) ${req.reservedCount > 0 ? `<span class="text-indigo-600 font-semibold">(Заброньовано з резерву: ${req.reservedCount})</span>` : ''}</p>
-          ${req.comment ? `<p class="text-xs text-slate-600 dark:text-slate-300 italic mb-2">💬 Коментар: ${req.comment}</p>` : ''}
-          ${req.managerQuestion ? `
-            <div class="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 rounded-lg text-xs">
-              <strong>Питання менеджера:</strong> ${req.managerQuestion}
-              <div class="mt-2 flex gap-2">
-                <input type="text" id="ans_${req.id}" placeholder="Ваша відповідь..." class="px-2 py-1 border rounded text-xs flex-1 dark:bg-slate-800 dark:border-slate-700">
-                <button onclick="sendClientAnswer('${req.id}')" class="px-3 py-1 bg-amber-600 text-white rounded">Відповісти</button>
+      container.innerHTML = requestsDB.map(req => {
+        const total = req.totalCount || req.count || 1;
+        const resCount = req.reservedCount || 0;
+        return `
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <span class="text-xs font-bold text-indigo-600">Заявка №${req.id}</span>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">${req.location} (${req.position})</h4>
               </div>
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusBadge(req.status)}">${getStatusText(req.status)}</span>
             </div>
-          ` : ''}
-          ${req.clientAnswer ? `<p class="text-xs text-emerald-600 mt-2">✓ Ваша відповідь: ${req.clientAnswer}</p>` : ''}
-        </div>
-      `).join('');
+            <p class="text-xs text-slate-500 mb-2">📅 Дата: <strong>${req.date}</strong> | Час: <strong>${req.time}</strong> | Потреба: <strong>${total} чол.</strong> (${req.gender}) ${resCount > 0 ? `<span class="text-indigo-600 font-semibold">(Заброньовано з резерву: ${resCount})</span>` : ''}</p>
+            ${req.comment ? `<p class="text-xs text-slate-600 dark:text-slate-300 italic mb-2">💬 Коментар: ${req.comment}</p>` : ''}
+            ${req.managerQuestion ? `
+              <div class="mt-3 p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 rounded-lg text-xs">
+                <strong>Питання менеджера:</strong> ${req.managerQuestion}
+                <div class="mt-2 flex gap-2">
+                  <input type="text" id="ans_${req.id}" placeholder="Ваша відповідь..." class="px-2 py-1 border rounded text-xs flex-1 dark:bg-slate-800 dark:border-slate-700">
+                  <button onclick="sendClientAnswer('${req.id}')" class="px-3 py-1 bg-amber-600 text-white rounded">Відповісти</button>
+                </div>
+              </div>
+            ` : ''}
+            ${req.clientAnswer ? `<p class="text-xs text-emerald-600 mt-2">✓ Ваша відповідь: ${req.clientAnswer}</p>` : ''}
+          </div>
+        `;
+      }).join('');
     }
 
     function sendClientAnswer(reqId) {
@@ -820,56 +842,59 @@
       }
     }
 
-    // --- МЕНЕДЖЕР: ЗАЯВКИ ТА 4 КНОПКИ ---
+    // --- МЕНЕДЖЕР ---
     function renderManagerRequests() {
       const container = document.getElementById('managerRequestsList');
       if (requestsDB.length === 0) {
         container.innerHTML = '<p class="text-slate-400 text-sm italic">Немає вхідних заявок.</p>';
         return;
       }
-      container.innerHTML = requestsDB.map(req => `
-        <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <span class="text-xs font-bold text-indigo-600">Заявка №${req.id} (${req.clientName})</span>
-              <h4 class="font-bold text-slate-900 dark:text-white text-base">${req.location} — ${req.position}</h4>
+      container.innerHTML = requestsDB.map(req => {
+        const total = req.totalCount || req.count || 1;
+        const needed = req.neededForOutsource !== undefined ? req.neededForOutsource : total;
+        const resCount = req.reservedCount || 0;
+        const isInWork = req.status === 'in_work' || req.status === 'published';
+
+        return `
+          <div class="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div class="flex justify-between items-start mb-2">
+              <div>
+                <span class="text-xs font-bold text-indigo-600">Заявка №${req.id} (${req.clientName})</span>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">${req.location} — ${req.position}</h4>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusBadge(req.status)}">${getStatusText(req.status)}</span>
             </div>
-            <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${getStatusBadge(req.status)}">${getStatusText(req.status)}</span>
+            <p class="text-xs text-slate-500 mb-3">📅 ${req.date} | ⏰ ${req.time} | 👥 Всього: <strong>${total} чол.</strong> | Для аутсорса: <strong class="text-indigo-600">${needed} чол.</strong> ${resCount > 0 ? `(Резерв: ${resCount})` : ''}</p>
+            ${req.clientAnswer ? `<p class="text-xs text-emerald-600 mb-3"><strong>Відповідь адміна:</strong> ${req.clientAnswer}</p>` : ''}
+            
+            <div class="flex flex-wrap gap-2 pt-2 border-t dark:border-slate-800">
+              ${!isInWork ? `
+                <button onclick="managerTakeInWork('${req.id}')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-semibold flex items-center space-x-1">
+                  <i class="fa-solid fa-gears"></i>
+                  <span>Взяти в роботу</span>
+                </button>
+              ` : ''}
+
+              <button onclick="managerAskClarification('${req.id}')" class="px-3 py-1.5 bg-amber-600/20 text-amber-700 dark:text-amber-300 rounded text-xs font-semibold border border-amber-500/30 flex items-center space-x-1">
+                <i class="fa-solid fa-circle-question"></i>
+                <span>Потрібне уточнення</span>
+              </button>
+
+              <button onclick="openEditReserveModal('${req.id}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-semibold border border-slate-700 flex items-center space-x-1">
+                <i class="fa-solid fa-pen-to-square"></i>
+                <span>Внести корективи</span>
+              </button>
+
+              <button onclick="managerPublishOpen('${req.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-semibold flex items-center space-x-1">
+                <i class="fa-solid fa-bullhorn"></i>
+                <span>Опублікувати для аутсорса</span>
+              </button>
+            </div>
           </div>
-          <p class="text-xs text-slate-500 mb-3">📅 ${req.date} | ⏰ ${req.time} | 👥 Всього: <strong>${req.totalCount} чол.</strong> | Для аутсорса: <strong class="text-indigo-600">${req.neededForOutsource} чол.</strong> ${req.reservedCount > 0 ? `(Резерв: ${req.reservedCount})` : ''}</p>
-          ${req.clientAnswer ? `<p class="text-xs text-emerald-600 mb-3"><strong>Відповідь адміна:</strong> ${req.clientAnswer}</p>` : ''}
-          
-          <!-- 4 КНОПКИ ДЛЯ МЕНЕДЖЕРА -->
-          <div class="flex flex-wrap gap-2 pt-2 border-t dark:border-slate-800">
-            <!-- 1. Взяти в роботу (с отправкой СМС) -->
-            <button onclick="managerTakeInWork('${req.id}')" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded text-xs font-semibold flex items-center space-x-1">
-              <i class="fa-solid fa-gears"></i>
-              <span>Взяти в роботу</span>
-            </button>
-
-            <!-- 2. Потрібне уточнення -->
-            <button onclick="managerAskClarification('${req.id}')" class="px-3 py-1.5 bg-amber-600/20 text-amber-700 dark:text-amber-300 rounded text-xs font-semibold border border-amber-500/30 flex items-center space-x-1">
-              <i class="fa-solid fa-circle-question"></i>
-              <span>Потрібне уточнення</span>
-            </button>
-
-            <!-- 3. Внести корективи (Резерв) -->
-            <button onclick="openEditReserveModal('${req.id}')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-semibold border border-slate-700 flex items-center space-x-1">
-              <i class="fa-solid fa-pen-to-square"></i>
-              <span>Внести корективи</span>
-            </button>
-
-            <!-- 4. Опублікувати для аутсорса -->
-            <button onclick="managerPublishOpen('${req.id}')" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-xs font-semibold flex items-center space-x-1">
-              <i class="fa-solid fa-bullhorn"></i>
-              <span>Опублікувати для аутсорса</span>
-            </button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    // 1. Взять в работу
     function managerTakeInWork(id) {
       const req = requestsDB.find(r => r.id == id);
       if (req) {
@@ -881,7 +906,6 @@
       }
     }
 
-    // 2. Уточнение
     function managerAskClarification(id) {
       const q = prompt("Введіть запитання / уточнення для адміна:");
       if (!q) return;
@@ -892,14 +916,17 @@
       renderManagerRequests();
     }
 
-    // 3. Модалка "Внести коррективы" (Шаг 1 и Шаг 2)
     function openEditReserveModal(reqId) {
       activeEditReqId = reqId;
       const req = requestsDB.find(r => r.id == reqId);
-      document.getElementById('editReqInfo').textContent = `Заявка №${req.id} (${req.location}) — Треба всього ${req.totalCount} чол.`;
-      
+      const total = req.totalCount || req.count || 1;
+      const needed = req.neededForOutsource !== undefined ? req.neededForOutsource : total;
+      const resCount = req.reservedCount || 0;
+
+      document.getElementById('editReqInfo').textContent = `Заявка №${req.id} (${req.location}) — Всього треба ${total} чол.`;
       document.getElementById('reserveCountBadge').textContent = `${globalReserve.length} людей (Натисніть для перегляду)`;
-      document.getElementById('currentReservedText').textContent = `Заброньовано з резерву: ${req.reservedCount} чол. | Залишилося для аутсорса: ${req.neededForOutsource} чол.`;
+      document.getElementById('currentReservedText').textContent = `Заброньовано з резерву: ${resCount} чол. | Залишилося для аутсорса: ${needed} чол.`;
+      document.getElementById('editOutsourceNeededInput').value = needed;
 
       document.getElementById('reserveStep1').classList.remove('hidden');
       document.getElementById('reserveStep2').classList.add('hidden');
@@ -912,7 +939,7 @@
       const req = requestsDB.find(r => r.id == activeEditReqId);
       const container = document.getElementById('reservePeopleList');
 
-      container.innerHTML = globalReserve.map((person, idx) => {
+      container.innerHTML = globalReserve.map((person) => {
         const isChecked = req.reservedWorkers && req.reservedWorkers.includes(person.name);
         return `
           <label class="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 cursor-pointer">
@@ -937,90 +964,135 @@
     function confirmReserveSelection() {
       const req = requestsDB.find(r => r.id == activeEditReqId);
       const checkedBoxes = document.querySelectorAll('.reserve-person-check:checked');
-      
+      const total = req.totalCount || req.count || 1;
+
       const selectedNames = Array.from(checkedBoxes).map(cb => cb.value);
       req.reservedWorkers = selectedNames;
       req.reservedCount = selectedNames.length;
-      
-      // Корректируем сколько осталось на аутсорс
-      req.neededForOutsource = Math.max(0, req.totalCount - req.reservedCount);
+      req.neededForOutsource = Math.max(0, total - req.reservedCount);
+
+      document.getElementById('editOutsourceNeededInput').value = req.neededForOutsource;
+      document.getElementById('currentReservedText').textContent = `Заброньовано з резерву: ${req.reservedCount} чол. | Залишилося для аутсорса: ${req.neededForOutsource} чол.`;
 
       saveDB();
       renderManagerRequests();
       backToReserveStep1();
-
-      document.getElementById('currentReservedText').textContent = `Заброньовано з резерву: ${req.reservedCount} чол. | Залишилося для аутсорса: ${req.neededForOutsource} чол.`;
     }
 
-    // 4. Опубликовать для аутсорса
+    function saveOutsourceCountChange() {
+      const req = requestsDB.find(r => r.id == activeEditReqId);
+      const newVal = parseInt(document.getElementById('editOutsourceNeededInput').value);
+      if (!isNaN(newVal) && newVal >= 0) {
+        req.neededForOutsource = newVal;
+        saveDB();
+        renderManagerRequests();
+        closeEditReserveModal();
+        alert('Кількість потрібного аутсорса збережено!');
+      }
+    }
+
     function managerPublishOpen(id) {
       const req = requestsDB.find(r => r.id == id);
       req.status = 'published';
       saveDB();
       renderManagerRequests();
-      alert(`Зміну №${req.id} опубліковано для аутсорса! (Потреба: ${req.neededForOutsource} чол.)`);
+      alert(`Зміну №${req.id} опубліковано для аутсорса! (Потреба: ${req.neededForOutsource || req.totalCount} чол.)`);
     }
 
 
-    // --- МЕНЕДЖЕР: БЕЛЫЙ И ЧЕРНЫЙ СПИСКИ ---
+    // --- СПИСКИ ДОСТУПА И ПОИСК ---
     function switchAccessTab(tab) {
+      currentAccessTab = tab;
       document.getElementById('btnTabWhite').className = tab === 'white' ? 'flex-1 py-1.5 rounded-md text-center bg-white dark:bg-slate-700 text-indigo-600 shadow-sm font-semibold' : 'flex-1 py-1.5 rounded-md text-center text-slate-500';
       document.getElementById('btnTabBlack').className = tab === 'black' ? 'flex-1 py-1.5 rounded-md text-center bg-white dark:bg-slate-700 text-rose-600 shadow-sm font-semibold' : 'flex-1 py-1.5 rounded-md text-center text-slate-500';
 
       document.getElementById('whiteListSection').classList.toggle('hidden', tab !== 'white');
       document.getElementById('blackListSection').classList.toggle('hidden', tab !== 'black');
 
-      if (tab === 'white') renderWhiteList();
-      else renderBlackList();
+      handleSearchAccessList();
     }
 
-    function renderWhiteList() {
+    function handleSearchAccessList() {
+      const query = document.getElementById('accessSearchInput').value.trim().toLowerCase();
+      if (currentAccessTab === 'white') renderWhiteList(query);
+      else renderBlackList(query);
+    }
+
+    function renderWhiteList(filterQuery = '') {
       const container = document.getElementById('whiteListDisplay');
-      if (outsourceAccessList.length === 0) {
-        container.innerHTML = '<p class="text-slate-400 italic text-xs">Білий список порожній</p>';
+      let list = outsourceAccessList;
+
+      if (filterQuery) {
+        list = list.filter(item => item.name.toLowerCase().includes(filterQuery) || item.phone.toLowerCase().includes(filterQuery));
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = '<p class="text-slate-400 italic text-xs">Нічого не знайдено</p>';
         return;
       }
-      container.innerHTML = outsourceAccessList.map((item, index) => `
-        <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/60 p-2 rounded border border-slate-200 dark:border-slate-700">
-          <div>
-            • <strong>${item.name}</strong>
-            <div class="text-[10px] text-slate-400">${item.phone}</div>
+
+      container.innerHTML = list.map((item) => {
+        const globalIdx = outsourceAccessList.findIndex(o => o.phone === item.phone);
+        return `
+          <div class="flex items-center justify-between bg-slate-50 dark:bg-slate-800/60 p-2 rounded border border-slate-200 dark:border-slate-700">
+            <div>
+              • <strong>${item.name}</strong>
+              <div class="text-[10px] text-slate-400">${item.phone}</div>
+            </div>
+            <div class="flex items-center space-x-1">
+              <button onclick="openBanModal(${globalIdx})" class="px-2 py-1 bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white rounded text-[11px] font-semibold transition" title="Обмежити доступ">🚫 Бан</button>
+              <button onclick="removeOutsource(${globalIdx})" class="px-2 py-1 text-slate-400 hover:text-rose-500 text-xs" title="Видалити">🗑</button>
+            </div>
           </div>
-          <div class="flex items-center space-x-1">
-            <button onclick="openBanModal(${index})" class="px-2 py-1 bg-rose-500/10 hover:bg-rose-500 text-rose-600 hover:text-white rounded text-[11px] font-semibold transition" title="Заблокувати">🚫 Бан</button>
-            <button onclick="removeOutsource(${index})" class="px-2 py-1 text-slate-400 hover:text-rose-500 text-xs" title="Видалити">🗑</button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
-    function renderBlackList() {
+    function renderBlackList(filterQuery = '') {
       const container = document.getElementById('blackListDisplay');
-      if (outsourceBlackList.length === 0) {
+      let list = outsourceBlackList;
+
+      if (filterQuery) {
+        list = list.filter(item => item.name.toLowerCase().includes(filterQuery) || item.phone.toLowerCase().includes(filterQuery));
+      }
+
+      if (list.length === 0) {
         container.innerHTML = '<p class="text-slate-400 italic text-xs">Чорний список порожній</p>';
         return;
       }
-      container.innerHTML = outsourceBlackList.map((item, index) => `
-        <div class="bg-rose-50/50 dark:bg-rose-950/20 p-2.5 rounded border border-rose-200 dark:border-rose-900 space-y-1">
-          <div class="flex items-center justify-between">
-            <span class="font-bold text-rose-700 dark:text-rose-300">🚫 ${item.name}</span>
-            <button onclick="unbanUser(${index})" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-semibold">🔓 Розблокувати</button>
+
+      container.innerHTML = list.map((item) => {
+        const globalIdx = outsourceBlackList.findIndex(b => b.phone === item.phone);
+        const whText = item.isFullBan ? '<span class="text-rose-600 font-bold">ПОВНИЙ БАН (Усі склади)</span>' : item.bannedWarehouses.join(', ');
+        return `
+          <div class="bg-rose-50/50 dark:bg-rose-950/20 p-2.5 rounded border border-rose-200 dark:border-rose-900 space-y-1">
+            <div class="flex items-center justify-between">
+              <span class="font-bold text-rose-700 dark:text-rose-300">🚫 ${item.name}</span>
+              <button onclick="unbanUser(${globalIdx})" class="px-2 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded text-[10px] font-semibold">🔓 Розблокувати</button>
+            </div>
+            <div class="text-[10px] text-slate-500">${item.phone}</div>
+            <div class="text-[10px] text-rose-600 font-medium">Заблоковано на: ${whText}</div>
           </div>
-          <div class="text-[10px] text-slate-500">${item.phone}</div>
-          <div class="text-[10px] text-rose-600 font-medium">Забанений на: <strong>${item.bannedWarehouses.join(', ')}</strong></div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function addOutsourceToList() {
       const name = document.getElementById('addAccName').value.trim();
       const phone = document.getElementById('addAccPhone').value.trim();
       if (!name || !phone) return alert('Заповніть ПІБ та телефон!');
-      outsourceAccessList.push({ name, phone }); saveDB(); renderWhiteList();
-      document.getElementById('addAccName').value = ''; document.getElementById('addAccPhone').value = '';
+      outsourceAccessList.push({ name, phone });
+      saveDB();
+      renderWhiteList();
+      document.getElementById('addAccName').value = '';
+      document.getElementById('addAccPhone').value = '';
     }
 
-    function removeOutsource(index) { outsourceAccessList.splice(index, 1); saveDB(); renderWhiteList(); }
+    function removeOutsource(index) {
+      outsourceAccessList.splice(index, 1);
+      saveDB();
+      renderWhiteList();
+    }
 
     // Бан модалка
     function openBanModal(index) {
@@ -1035,22 +1107,24 @@
 
     function banSelectAll() {
       document.querySelectorAll('.ban-wh-check').forEach(ch => ch.checked = true);
+      confirmBanSubmit(true);
     }
 
-    function confirmBanSubmit() {
+    function confirmBanSubmit(isFullBanOverride = false) {
       if (selectedBanUserIndex === null) return;
       const user = outsourceAccessList[selectedBanUserIndex];
       const checkedBoxes = document.querySelectorAll('.ban-wh-check:checked');
-      
-      if (checkedBoxes.length === 0) return alert('Оберіть хоча б один склад або натисніть "Усі склади"!');
+
+      if (!isFullBanOverride && checkedBoxes.length === 0) return alert('Оберіть хоча б один склад!');
 
       const bannedWarehouses = Array.from(checkedBoxes).map(cb => cb.value);
+      const isFull = isFullBanOverride || checkedBoxes.length === 4;
 
-      // Переносим из белого в черный список
       outsourceBlackList.push({
         name: user.name,
         phone: user.phone,
-        bannedWarehouses: bannedWarehouses
+        bannedWarehouses: bannedWarehouses,
+        isFullBan: isFull
       });
 
       outsourceAccessList.splice(selectedBanUserIndex, 1);
@@ -1059,7 +1133,7 @@
       saveDB();
       closeBanModal();
       renderWhiteList();
-      alert(`Користувача заблоковано на обраних складах!`);
+      alert(isFull ? 'Користувача заблоковано на всіх складах (Повний бан)!' : 'Обмеження доступу збережено!');
     }
 
     function unbanUser(index) {
@@ -1076,11 +1150,9 @@
       const openContainer = document.getElementById('outsourceOpenShiftsList');
       const schedContainer = document.getElementById('outsourceScheduledList');
 
-      // Проверяем, забанен ли текущий пользователь на каких-то складах
       const blackInfo = outsourceBlackList.find(b => b.phone.replace(/\D/g, '') === currentUser.phone.replace(/\D/g, ''));
       const bannedWhList = blackInfo ? blackInfo.bannedWarehouses : [];
 
-      // Фильтруем открытые смены (исключаем забаненные склады)
       const openShifts = requestsDB.filter(r => {
         const isPublished = r.status === 'published';
         const notAppliedYet = !r.applicants || !r.applicants.includes(currentUser.name);
