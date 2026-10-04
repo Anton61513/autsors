@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="uk" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <title>Кабінет Виконавця</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user || !user.isAuthenticated || user.role !== 'outsource') {
+      window.location.href = 'index.html';
+    }
+  </script>
+</head>
+<body class="bg-slate-900 text-white p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-4">Кабінет Виконавця (Аутсорс)</h1>
+    <p class="text-slate-400 mb-6">Перегляд ваших призначених завдань.</p>
+    <button onclick="localStorage.removeItem('currentUser'); window.location.href='index.html';" class="px-4 py-2 bg-red-600 rounded-xl font-bold text-sm">Вийти</button>
+  </div>
+</body>
+</html>
